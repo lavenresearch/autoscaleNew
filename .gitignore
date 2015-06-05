@@ -1,4 +1,5 @@
 packages
 *.pyc
+*.py~
 *.log
 *.rdb

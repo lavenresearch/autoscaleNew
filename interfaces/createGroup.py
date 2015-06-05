@@ -10,18 +10,19 @@ import json
 
 # For example:
 #
-# python createGroup.py highSpeedGroup
+# python createGroup.py highSpeedGroup tag1 tag2 tag3 ...
 
 def run(arg):
     logger = autoscaleLog(__file__)
     logger.writeLog(sys.argv)
     groupName = arg[0]
+    tagList = arg[1:]
     sConf = staticConfig()
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
     providersConf = cHelper.getProviderConf()
     if providersConf.get(groupName) == None:
-        providersConf[groupName] = {}
+        providersConf[groupName] = {"tags":tagList}
         cHelper.setProviderConf(providersConf)
     logger.writeLog(providersConf)
     print json.dumps(providersConf)
@@ -39,4 +40,5 @@ def run(arg):
 
 if __name__ == '__main__':
     groupName = sys.argv[1]
-    run(groupName)
+    tagList = sys.argv[2:]
+    run([groupName,tagList])

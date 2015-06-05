@@ -36,6 +36,7 @@ def run(arg):
     logger.writeLog(usageInfo)
     print json.dumps(usageInfo)
     logger.shutdownLog()
+    return usageInfo
 
 if __name__ == '__main__':
     run([])

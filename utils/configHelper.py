@@ -8,6 +8,10 @@ class configHelper():
     providerConfKey = "pckey"
     comsumerConfKey = "cckey"
     availTidKey = "atidkey"
+    userBookingKey = "ubookkey"
+    timeslotBookingKey = "tsbookkey"
+    releaseCandidatesKey = "rcandidateskey"
+    tagsManagerKey = "tmkey"
     def __init__(self, ipInfoC, portInfoC):
         self.ipInfoC = ipInfoC
         self.portInfoC = portInfoC
@@ -94,6 +98,65 @@ class configHelper():
     def setAvailTid(self,atid):
         atidJson = json.dumps(atid)
         self.setConfig(self.availTidKey,atidJson)
+
+    def getUserBookingTable(self):
+        '''
+        user booking table
+        {
+            user:{groupName:{timeslot1:1111,
+                             timeslot2:2222}
+                 }
+        }
+        '''
+        userBookingJson = self.getConfig(self.userBookingKey)
+        userBooking = json.loads(userBookingJson)
+        return userBooking
+    def setUserBookingTable(self,userBooking):
+        self.setConfig(self.userBookingKey, json.dumps(userBooking))
+
+    def getTimeSlotBookingTable(self):
+        '''
+        timeslot booking table
+        {
+            groupName:{timeslot1: available Space,
+                       timeslot2: available Space,}
+        }
+        '''
+        timeslotBookingJson = self.getConfig(self.timeslotBookingKey)
+        timeslotBooking = json.loads(timeslotBookingJson)
+        return timeslotBooking
+    def setTimeSlotBookingTable(self, timeslotBooking):
+        timeslotBookingJson = json.dumps(timeslotBooking)
+        self.setConfig(self.timeslotBookingkey, timeslotBookingJson)
+
+    def getReleaseCandidates(self):
+        '''
+        release Candidates list
+        {
+            consumerIP1:space
+            consumerIP2:space
+        }
+        '''
+        releaseCandidatesJson = self.getConfig(self.releaseCandidatesKey)
+        releaseCandidates = json.loads(releaseCandidatesJson)
+        return releaseCandidates
+    def setReleaseCandidates(self, releaseCandidates):
+        releaseCandidatesJson = json.dumps(releaseCandidates)
+        self.setConfig(self.releaseCandidatesKey, releaseCandidatesJson)
+
+    def getTagsManager(self):
+        '''
+        {
+            groupName:[tag1,tag2],
+            groupName:[tag2,tag3]
+        }
+        '''
+        tagsManagerJson = self.getConfig(self.tagsManagerKey)
+        tagsManager = json.loads(tagsManagerJson)
+        return tagsManager
+    def setTagsManager(self, tagsManager):
+        tagsManagerJson = json.dumps(tagsManager)
+        self.setConfig(self.tagsManagerKey, tagsManagerJson)
 
 
 if __name__ == '__main__':
