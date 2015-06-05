@@ -3,7 +3,7 @@ from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 import sys,os
 
-# python addStorageConsumer.py consumerLocation
+# python addStorageConsumer.py user1 consumerLocation
 
 def executeCmd(cmd):
     logger = autoscaleLog(__file__)
@@ -16,10 +16,23 @@ def executeCmd(cmd):
     return output
 
 def run(arg):
-    consumerLocation = arg[0]
+    userName = arg[1]
+    consumerLocation = arg[1]
     sConf = staticConfig()
     path = sConf.getPath()
+    infoCLocation = sConf.getInfoCLocation()
+    cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
     cmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py startConsumer\""
+    userConsumers = cHelper.getUserConsumers()
+    userC = userConsumers.get(userName)
+    if userC == None:
+        userC = []
+    if consumerLocation in userC:
+        print "consumer already exist!"
+        return False
+    userC.append(consumerLocation)
+    userConsumers[userName] = userC
+    cHelper.setUserConsumers(userConsumers)
     executeCmd(cmd)
 
 if __name__ == '__main__':

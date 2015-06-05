@@ -12,6 +12,7 @@ class configHelper():
     timeslotBookingKey = "tsbookkey"
     releaseCandidatesKey = "rcandidateskey"
     tagsManagerKey = "tmkey"
+    userConsumersKey = "uckey"
     def __init__(self, ipInfoC, portInfoC):
         self.ipInfoC = ipInfoC
         self.portInfoC = portInfoC
@@ -157,6 +158,19 @@ class configHelper():
     def setTagsManager(self, tagsManager):
         tagsManagerJson = json.dumps(tagsManager)
         self.setConfig(self.tagsManagerKey, tagsManagerJson)
+
+    def getUserConsumers(self):
+        '''
+        {
+            user1:[consumer1, consumer2]
+        }
+        '''
+        userConsumersJson = self.getConfig(self.userConsumersKey)
+        userConsumers = json.loads(userConsumersJson)
+        return userConsumers
+    def setUserConsumers(self, userConsumers):
+        userConsumersJson = json.dumps(userConsumers)
+        self.setConfig(self.userConsumersKey, userConsumersJson)
 
 
 if __name__ == '__main__':
