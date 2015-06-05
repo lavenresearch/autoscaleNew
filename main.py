@@ -6,13 +6,13 @@ from operations.releaseStorage import releaseStorage
 from operations.startConsumer import startConsumer
 from test.testAll import testAll
 
-from interfaces import createGroup, addDeviceToGroup, addStorageConsumer, requestExtraStorage, releaseExtraStorage, getInfo, getUsageInfo
+from interfaces import createGroup, addDeviceToGroup, addStorageConsumer, requestExtraStorage, releaseExtraStorage, getInfo, getUsageInfo, bookStorage, requestBookedStorage
 
 from utils.deployALL import deployALL
 from utils import updateAll, breakAll
 
 ops = ["startProvider","extendGroup","releaseStorage","requestStorage","startConsumer"]
-ifs = ["createGroup", "addDeviceToGroup", "addStorageConsumer", "requestExtraStorage", "releaseExtraStorage", "getInfo", "getUsageInfo"]
+ifs = ["createGroup", "addDeviceToGroup", "addStorageConsumer", "requestExtraStorage", "releaseExtraStorage", "getInfo", "getUsageInfo", "bookStorage", "requestBookedStorage"]
 
 if __name__ == '__main__':
     prefix = "operations."

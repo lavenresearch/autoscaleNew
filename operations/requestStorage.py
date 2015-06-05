@@ -14,4 +14,6 @@ class requestStorage():
         self.stepSize = args[1]
         self.sConsumer = storageConsumer()
     def run(self):
-        self.sConsumer.requestStorage(self.groupName,self.stepSize)
+        newDevices = self.sConsumer.requestStorage(self.groupName,self.stepSize)
+        for ndevice in newDevices:
+            print ndevice

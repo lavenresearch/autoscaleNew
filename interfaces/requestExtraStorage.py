@@ -37,7 +37,12 @@ def run(arg):
     groupName = arg[1]
     stepSize = arg[2]
     requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+"\""
-    executeCmd(requestStorageCmd)
+    output = executeCmd(requestStorageCmd)
+    deviceMap = output.split("\n")[-1]
+    releaseCandidateKey = deviceMap+"@"+consumerLocation
+    releaseCandidates = cHelper.getReleaseCandidates()
+    releaseCandidates[releaseCandidateKey] = int(stepSize)
+    cHelper.setReleaseCandidates(releaseCandidates)
 
 if __name__ == '__main__':
     consumerLocation = sys.argv[1]

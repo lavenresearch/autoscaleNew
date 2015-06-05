@@ -2,7 +2,9 @@ from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 from utils.groupChooser import groupChooser
-import sys,os
+from interfaces import getUsageInfo
+from interfaces import releaseExtraStorage
+import sys,os,time
 
 # Needed arguments including:
 #
@@ -36,40 +38,65 @@ def run(arg):
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
     userName = arg[0]
-    stepSize = arg[1]
-    startTime = arg[2]
-    endTime = arg[3]
-    tagList = arg[4:]
+    consumerLocation = arg[1]
+    stepSize = arg[2]
+    tagList = arg[3:]
     gchooser = groupChooser()
     groupList = gchooser.chooseGroup(tagList)
     if groupList == []:
         print "No storage resource available"
         return False
     groupName = groupList[0]
-    res = gchooser.applyTimeslot(groupName,startTime,endTime,stepSize)
-    if res == False:
-        print "booking failed"
-        return False
-
-    # update user booking table
-
+    currentTime = time.time()
+    ctKey = currentTime/3600
     userBooking = cHelper.getUserBookingTable()
     userBookingForUser = userBooking.get(userName)
     if userBookingForUser == None:
-        userBookingForUser = {}
+        print "User did not book any storage"
+        return False
     userBookingForUserForGroup = userBookingForUser.get(groupName)
     if userBookingForUserForGroup == None:
-        userBookingForUserForGroup = {}
-    stKey = startTime/3600
-    etKey = endTime/3600
-    for t in xrange(stKey,etKey):
-        s = userBookingForUserForGroup.get(t)
-        if s == None:
-            s = 0
-        userBookingForUserForGroup[t] = s + size
+        print "User did not book storage for "+str(tagList)
+        return False
+    bookedStorageSize = userBookingForUserForGroup.get(ctKey)
+    if bookedStorageSize == None:
+        print "User did not book storage for this period"
+        return False
+    if bookedStorageSize < stepSize:
+        print "User do not have enough booked storage space"
+        return False
+
+    # check current available space, if not enough , release
+
+    currentUsageInfo = getUsageInfo.run([])
+    asize = currentUsageInfo.get(groupName).get('groupSize')
+    neededSize = 0
+    if stepSize > asize:
+        neededSize = stepSize - asize
+    if neededSize > 0:
+        releaseConsumerList = []
+        releaseCandidates = cHelper.getReleaseCandidates()
+        for deviceMapConsumerIP,size in releaseCandidates.items():
+            neededSize = neededSize - size
+            releaseConsumerList.append(deviceMapConsumerIP)
+            if neededSize <= 0:
+                break
+        if neededSize > 0:
+            print "Do not have enough space sorry"
+            return False
+        # release consumers
+        for deviceMapConsumerIP in releaseConsumerList:
+            deviceMap, consumerIP = deviceMapConsumerIP.split("@")
+            releaseExtraStorage.run([consumerIP,deviceMap])
+
+    requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+"\""
+    executedCmd(requestStorageCmd)
+
+    userBookingForUserForGroup[ctKey] = bookedStorageSize - stepSize
     cHelper.setUserBookingTable(userBooking)
-    print "booking succeded"
+    print "get booked storage succeded"
     return True
+
 
 if __name__ == '__main__':
     run(sys.argv[1:])

@@ -142,6 +142,7 @@ class storageConsumer():
         self.cHelper.setGroupMConf(remoteGroupManagersConf)
         remoteConsumerConf["extraDevicesList"].append(extraDeviceConf)
         self.cHelper.setConsumerConf(remoteConsumersConf)
+        return newDevices
 
     def releaseStorage(self, localDeviceMap):
         remoteConf = self.cHelper.getConsumerConf()
