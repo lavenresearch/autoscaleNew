@@ -2,6 +2,7 @@ from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 from utils.groupChooser import groupChooser
+from utils.timeManager import timeManager
 from interfaces import getUsageInfo
 from interfaces import releaseExtraStorage
 import sys,os,time
@@ -47,7 +48,9 @@ def run(arg):
         print "No storage resource available"
         return False
     groupName = groupList[0]
-    currentTime = time.time()
+    # currentTime = time.time()
+    timeM = timeManager()
+    currentTime = timeM.getTime()
     ctKey = currentTime/3600
     userBooking = cHelper.getUserBookingTable()
     userBookingForUser = userBooking.get(userName)
@@ -90,7 +93,8 @@ def run(arg):
             releaseExtraStorage.run([consumerIP,deviceMap])
 
     requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" booked\""
-    executedCmd(requestStorageCmd)
+    print requestBookedStorage
+    # executedCmd(requestStorageCmd)
 
     userBookingForUserForGroup[ctKey] = bookedStorageSize - stepSize
     cHelper.setUserBookingTable(userBooking)

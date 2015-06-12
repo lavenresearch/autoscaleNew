@@ -13,6 +13,7 @@ class configHelper():
     releaseCandidatesKey = "releaseCandidateskey"
     tagsManagerKey = "tagsManagerKey"
     userConsumersKey = "userConsumerKey"
+    timeManagerKey = "timeManagerKey"
     def __init__(self, ipInfoC, portInfoC):
         self.ipInfoC = ipInfoC
         self.portInfoC = portInfoC
@@ -171,6 +172,19 @@ class configHelper():
     def setUserConsumers(self, userConsumers):
         userConsumersJson = json.dumps(userConsumers)
         self.setConfig(self.userConsumersKey, userConsumersJson)
+
+    def getTimeManager(self):
+        '''
+        the value is :
+        1111111111111
+        '''
+        t = self.r.get(self.timeManagerKey)
+        if t == None:
+            t = -1
+        return int(t)
+    def setTimeManager(self, time):
+        self.r.set(self.timeManagerKey, int(time))
+
 
 
 if __name__ == '__main__':
