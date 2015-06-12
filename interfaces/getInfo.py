@@ -21,9 +21,11 @@ def run(arg):
     cHelper = configHelper(infoCLocation["ipInfoC"],infoCLocation["portInfoC"])
     consumersConf = cHelper.getConsumerConf()
     providersConf = cHelper.getProviderConf()
+    tagsManager = cHelper.getTagsManager()
     allConf = {}
     allConf["dev"] = providersConf
     allConf["appserver"] = consumersConf
+    allConf["tags"] = tagsManager
     logger.writeLog(allConf)
     print json.dumps(allConf)
     logger.shutdownLog()

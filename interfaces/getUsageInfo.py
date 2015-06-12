@@ -34,9 +34,13 @@ def run(arg):
             usedSize = remoteDevice["remoteSize"]
             usageInfo[groupName]["usedSize"] += int(usedSize)
     logger.writeLog(usageInfo)
-    print json.dumps(usageInfo)
     logger.shutdownLog()
-    return usageInfo
+    tagsM = cHelper.getTagsManager()
+    allInfo = {}
+    allInfo["usageInfo"] = usageInfo
+    allInfo["tags"] = tagsM
+    print json.dumps(allInfo)
+    return allInfo
 
 if __name__ == '__main__':
     run([])
