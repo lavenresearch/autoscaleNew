@@ -27,6 +27,9 @@ def run(arg):
         print "group do not exist"
         return False
     gmIP = gmConf.get("gmIP")
+    print gmIP
+    print path
+    print groupName
     deleteGroupCmd = "ssh -t root@"+gmIP+" \"python "+path+"main.py deleteGroup "+groupName+"\""
     executeCmd(deleteGroupCmd)
 

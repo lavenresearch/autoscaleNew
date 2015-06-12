@@ -13,7 +13,7 @@ class remoteDevice():
     deviceLocation = ""
     deviceIQN = ""
     deviceTid = ""
-    def __init__(self, deviceID, deviceLocation, deviceIQN, deviceTid):
+    def __init__(self, deviceID, deviceName, deviceLocation, deviceIQN, deviceTid):
         self.deviceID = deviceID
         self.deviceName = deviceName
         self.deviceLocation = deviceLocation
@@ -33,7 +33,7 @@ class remoteDevice():
         self.executeCmd(cmdDiscovery)
         self.executeCmd(cmdLogin)
     def iscsiLogout(self):
-        cmdLogout = "iscsiadm -m node -T " + self.deviceIQN + " -p " + self.deviceLocation + "-u"
+        cmdLogout = "iscsiadm -m node -T " + self.deviceIQN + " -p " + self.deviceLocation + " -u"
         self.executeCmd(cmdLogout)
     # def stopProvider(self):
     #     cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+self.deviceTid
@@ -187,7 +187,7 @@ class groupManager():
         self.cHelper.setGroupMConf(confRemote)
 
     def clearGroup(self):
-        remoteGroupManagersConf = self.configHelper.getGroupMConf()
+        remoteGroupManagersConf = self.cHelper.getGroupMConf()
         remoteGroupManagerConf = remoteGroupManagersConf.get(self.groupName)
         if remoteGroupManagerConf == None:
             print "group do not exist!"
@@ -201,35 +201,42 @@ class groupManager():
         removeVGCmd = "vgremove "+self.groupName+"VG"
         self.executeCmd(removeVGCmd)
         for device in self.devicesList:
+            # TODO add storage provider mapping to groupManager localdisk 
+            # removePVCmd = "pvremove "+device.deviceName
+            # self.executeCmd(removePVCmd)
             device.iscsiLogout()
             cmdStopProvider = "ssh -t root@"+device.deviceLocation+" \"python "+self.path+"main.py stopProvider "+device.deviceName+" "+self.groupName+"\""
             self.executeCmd(cmdStopProvider)
             # device.stopProvider()
 
         # update information center
-
-        gmConf = cHelper.getGroupMConf()
-        gmConf[groupName] = {}
-        currentTid = gmConf[groupName]["currentTid"]
-        gmConf[groupName]["currentTid"] = (currentTid-500)/200+500
-        gmConf[groupName]["gmIP"] = sConf.getGroupMIP()
-        gmConf[groupName]["devicesLoaded"] = []
-        gmConf[groupName]["consumersLoaded"] = []
-        cHelper.setGroupMConf(gmConf)
+        
+        gmConf = self.cHelper.getGroupMConf()
+        currentTid = gmConf[self.groupName]["currentTid"]
+	print "&&&&&&&&&&&&&& currentTid &&&&&&&&&&&& " + str(currentTid)
+        sConf = staticConfig()
+        gmConf[self.groupName] = {}
+        gmConf[self.groupName]["currentTid"] = (currentTid-500)/200*200+500
+	print "&&&&&&&&&&&&&& new currentTid &&&&&&&&&&& " + str(gmConf[self.groupName]["currentTid"])
+        gmConf[self.groupName]["gmIP"] = sConf.getGroupMIP()
+        gmConf[self.groupName]["devicesLoaded"] = []
+        gmConf[self.groupName]["consumersLoaded"] = []
+        self.cHelper.setGroupMConf(gmConf)
 
     def deleteGroup(self):
         self.clearGroup()
-        gmConf = cHelper.getGroupMConf()
-        gmConf.pop(self.groupName)
-        cHelper.setGroupMConf(gmConf)
+        gmConf = self.cHelper.getGroupMConf()
+	if gmConf.has_key(self.groupName):
+            gmConf.pop(self.groupName)
+            self.cHelper.setGroupMConf(gmConf)
 
-        providerConf = cHelper.getProviderConf()
+        providerConf = self.cHelper.getProviderConf()
         providerConf.pop(self.groupName)
-        cHelper.setGroupMConf(providerConf)
+        self.cHelper.setProviderConf(providerConf)
         
-        tagsManager = cHelper.getTagsManager()
+        tagsManager = self.cHelper.getTagsManager()
         tagsManager.pop(self.groupName)
-        cHelper.setTagsManager(tagsManager)
+        self.cHelper.setTagsManager(tagsManager)
         return True
         # providerConf = self.configHelper.getProviderConf()
         # groupProviderConf = providerConf.get(self.groupName)

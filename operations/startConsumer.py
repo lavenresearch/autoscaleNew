@@ -12,8 +12,10 @@ class startConsumer():
     cHelper = None
     conf = {}
     hostIP = ""
+    userName = ""
     logger = None
     def __init__(self,arg):
+        self.userName = arg[0]
         sConf = staticConfig()
         self.logger = autoscaleLog(__file__)
         self.ipInfoC = sConf.getInfoCLocation()["ipInfoC"]
@@ -54,6 +56,7 @@ class startConsumer():
             self.conf["remoteDiskAmount"] = remoteDiskAmount
             self.conf["consumerLocation"] = consumerLocation
             self.conf["consumerID"] = consumerID
+            self.conf["userName"] = self.userName
             self.conf["extraDevicesList"] = []
             remoteConf[consumerID] = self.conf
             self.cHelper.setConsumerConf(remoteConf)

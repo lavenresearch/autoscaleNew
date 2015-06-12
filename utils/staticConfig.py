@@ -5,12 +5,13 @@ class staticConfig():
     staticConf = {}
     logger = None
     def __init__(self):
-        self.staticConf["infoCLocation"] = {"ipInfoC":"192.168.16.122", "portInfoC":6379}
-        self.staticConf["path"] = "/usr/local/src/suyiAutoscale/src/"
-        self.staticConf["gmCandidates"] = ["192.168.16.122"]
+        self.staticConf["infoCLocation"] = {"ipInfoC":"192.168.16.123", "portInfoC":6379}
+        self.staticConf["path"] = "/opt/suyi/autoscale706/"
+        self.staticConf["gmCandidates"] = ["192.168.16.123"]
         self.staticConf["hostInterfaceMap"] = {"ds01":"eth0",
                                                "ds02":"eth0",
-                                               "ds03":"eth0"}
+                                               "ds03":"eth0",
+                                               "ds04":"eth0"}
         self.logger = autoscaleLog(__file__)
         self.logger.writeLog(self.staticConf)
         self.logger.shutdownLog()

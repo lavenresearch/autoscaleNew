@@ -9,10 +9,10 @@ import sys,os
 class clearGroup():
     groupName = ""
     groupManager = None
-	def __init__(self, args):
-		self.groupName = args[0]
+    def __init__(self, args):
+        self.groupName = args[0]
         self.groupManager = groupManager(self.groupName)
         self.logger = autoscaleLog(__file__)
-	def run(self):
-		self.groupManager.clearGroup()
+    def run(self):
+	self.groupManager.clearGroup()
 

@@ -16,13 +16,13 @@ def executeCmd(cmd):
     return output
 
 def run(arg):
-    userName = arg[1]
+    userName = arg[0]
     consumerLocation = arg[1]
     sConf = staticConfig()
     path = sConf.getPath()
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
-    cmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py startConsumer\""
+    cmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py startConsumer "+userName+"\""
     userConsumers = cHelper.getUserConsumers()
     userC = userConsumers.get(userName)
     if userC == None:

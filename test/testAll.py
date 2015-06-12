@@ -38,22 +38,22 @@ from interfaces import createGroup, addDeviceToGroup, addStorageConsumer, reques
 # ca32, ca07: storage providers(/dev/loop0, /dev/loop1)
 
 class testAll():
-    cgARG1 = ["highSpeedGroup"]
-    cgARG2 = ["lowSpeedGroup"]
+    cgARG1 = ["high","tag1","tag2"]
+    cgARG2 = ["low","tag3","tag4"]
 
-    ascARG1 = ["192.168.3.161"]
-    ascARG2 = ["192.168.3.62"]
+    ascARG1 = ["user1","192.168.16.124"]
+    #ascARG2 = ["192.168.3.62"]
 
-    adtgARG1 = ["192.168.3.192","/dev/loop0","highSpeedGroup"]
-    adtgARG2 = ["192.168.3.192","/dev/loop1","highSpeedGroup"]
-    adtgARG3 = ["192.168.3.167","/dev/loop0","highSpeedGroup"]
-    adtgARG4 = ["192.168.3.167","/dev/loop1","lowSpeedGroup"]
+    adtgARG1 = ["192.168.16.124","/dev/loop0","high"]
+    adtgARG2 = ["192.168.16.124","/dev/loop1","low"]
+    #adtgARG3 = ["192.168.16.124","/dev/loop0","high"]
+    #adtgARG4 = ["192.168.16.124","/dev/loop1","low"]
 
-    rqesARG1 = ["192.168.3.161","highSpeedGroup",150]
-    rqesARG2 = ["192.168.3.161","highSpeedGroup",250]
-    rqesARG3 = ["192.168.3.161","lowSpeedGroup",350]
-    rqesARG4 = ["192.168.3.62","highSpeedGroup",400]
-    rqesARG5 = ["192.168.3.62","lowSpeedGroup",500]
+    rqesARG1 = ["192.168.16.124",150,"tag1","tag2"]
+    rqesARG2 = ["192.168.16.124",250,"tag3","tag4"]
+    rqesARG3 = ["192.168.16.124",350,"tag1","tag2"]
+    rqesARG4 = ["192.168.16.124",400,"tag5"]
+    #rqesARG5 = ["192.168.16.123","low",500]
 
     # rlesARG1
     def __init__(self):
@@ -79,7 +79,7 @@ class testAll():
             print "addStorageConsumer 2"
             print "########################\n\n"
             addStorageConsumer.run(self.ascARG1)
-            addStorageConsumer.run(self.ascARG2)
+            #addStorageConsumer.run(self.ascARG2)
             self.viewResult()
         if stepCode <= 3:
             print "\n\n########################"
@@ -87,8 +87,8 @@ class testAll():
             print "########################\n\n"
             addDeviceToGroup.run(self.adtgARG1)
             addDeviceToGroup.run(self.adtgARG2)
-            addDeviceToGroup.run(self.adtgARG3)
-            addDeviceToGroup.run(self.adtgARG4)
+            #addDeviceToGroup.run(self.adtgARG3)
+            #addDeviceToGroup.run(self.adtgARG4)
             self.viewResult()
         if stepCode <= 4:
             print "\n\n########################"
@@ -98,7 +98,7 @@ class testAll():
             requestExtraStorage.run(self.rqesARG2)
             requestExtraStorage.run(self.rqesARG3)
             requestExtraStorage.run(self.rqesARG4)
-            requestExtraStorage.run(self.rqesARG5)
+            #requestExtraStorage.run(self.rqesARG5)
             self.viewResult()
         if stepCode <= 5:
             print "\n\n########################"

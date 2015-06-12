@@ -23,7 +23,10 @@ def run(arg):
     providersConf = cHelper.getProviderConf()
     if providersConf.get(groupName) == None:
         # providersConf[groupName] = {"tags":tagList}
-        cHelper.setProviderConf(providersConf)
+        providersConf[groupName] = {}
+    else:
+        print "group exist"
+        sys.exit(1)
     logger.writeLog(providersConf)
     print json.dumps(providersConf)
     gmConf = cHelper.getGroupMConf()
@@ -34,9 +37,20 @@ def run(arg):
         gmConf[groupName]["gmIP"] = sConf.getGroupMIP()
         gmConf[groupName]["devicesLoaded"] = []
         gmConf[groupName]["consumersLoaded"] = []
-        cHelper.setGroupMConf(gmConf)
+    else:
+        print "group exist"
+        sys.exit(1)
     logger.writeLog(gmConf)
     print json.dumps(gmConf)
+    tagsManager = cHelper.getTagsManager()
+    if tagsManager.get(groupName) == None:
+    	tagsManager[groupName] = tagList
+    else:
+        print "group exist"
+        sys.exit(1)
+    cHelper.setProviderConf(providersConf)
+    cHelper.setGroupMConf(gmConf)
+    cHelper.setTagsManager(tagsManager)
     logger.shutdownLog()
 
 if __name__ == '__main__':

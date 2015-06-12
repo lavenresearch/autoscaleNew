@@ -89,7 +89,7 @@ def run(arg):
             deviceMap, consumerIP = deviceMapConsumerIP.split("@")
             releaseExtraStorage.run([consumerIP,deviceMap])
 
-    requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+"\""
+    requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" booked\""
     executedCmd(requestStorageCmd)
 
     userBookingForUserForGroup[ctKey] = bookedStorageSize - stepSize

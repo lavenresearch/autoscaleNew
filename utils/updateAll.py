@@ -30,7 +30,9 @@ class updateAll():
         self.executeRemoteCmd(rcmd, self.destinationIP)
         rcmd = "mkdir -p "+self.path
         self.executeRemoteCmd(rcmd, self.destinationIP)
-        cmd = "scp -r "+self.path+"* root@"+self.destinationIP+":"+self.path
+	currentPwd = os.popen("pwd").read()
+        currentPwd = currentPwd.split("\n")[0]+"/"
+        cmd = "scp -r "+currentPwd+"* root@"+self.destinationIP+":"+self.path
         self.executeCmd(cmd)
         rcmd = "dos2unix "+self.path+"*/*.sh"
         self.executeRemoteCmd(rcmd, self.destinationIP)

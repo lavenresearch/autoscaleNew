@@ -35,6 +35,8 @@ def executeCmd(cmd):
 def run(arg):
     sConf = staticConfig()
     path = sConf.getPath()
+    infoCLocation = sConf.getInfoCLocation()
+    cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
     consumerLocation = arg[0]
     stepSize = arg[1]
     tagList = arg[2:]
@@ -45,13 +47,9 @@ def run(arg):
         print "No storage resource available"
         return False
     groupName = groupList[0]
-    requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+"\""
+    requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" extra\""
     output = executeCmd(requestStorageCmd)
-    deviceMap = output.split("\n")[-1]
-    releaseCandidateKey = deviceMap+"@"+consumerLocation
-    releaseCandidates = cHelper.getReleaseCandidates()
-    releaseCandidates[releaseCandidateKey] = int(stepSize)
-    cHelper.setReleaseCandidates(releaseCandidates)
+    # deviceMap = output.split("\n")[-1]
 
 if __name__ == '__main__':
     consumerLocation = sys.argv[1]

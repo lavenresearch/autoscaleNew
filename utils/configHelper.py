@@ -4,22 +4,22 @@ class configHelper():
     ipInfoC = ""
     portInfoC = 6379
     r = None
-    groupManagerConfKey = "groupckey"
-    providerConfKey = "pckey"
-    comsumerConfKey = "cckey"
-    availTidKey = "atidkey"
-    userBookingKey = "ubookkey"
-    timeslotBookingKey = "tsbookkey"
-    releaseCandidatesKey = "rcandidateskey"
-    tagsManagerKey = "tmkey"
-    userConsumersKey = "uckey"
+    groupManagerConfKey = "groupManagerConfKey"
+    providerConfKey = "providerConfKey"
+    comsumerConfKey = "consumerConfKey"
+    availTidKey = "availTidKey"
+    userBookingKey = "userBookingKey"
+    timeslotBookingKey = "timeslotBookingKey"
+    releaseCandidatesKey = "releaseCandidateskey"
+    tagsManagerKey = "tagsManagerKey"
+    userConsumersKey = "userConsumerKey"
     def __init__(self, ipInfoC, portInfoC):
         self.ipInfoC = ipInfoC
         self.portInfoC = portInfoC
         self.r = redis.StrictRedis( host=self.ipInfoC, port=self.portInfoC, db=0)
 
     def setConfig(self,key,value):
-        print "\nSET:\n"+str(value)
+        print "\n"+str(key)+" SET TO:\n"+str(value)
         self.r.set(key,value)
     def getConfig(self,key):
         value = self.r.get(key)
@@ -177,3 +177,27 @@ if __name__ == '__main__':
     ipInfoC = "127.0.0.1"
     portInfoC = 6379
     cHelper = configHelper(ipInfoC, portInfoC)
+    print cHelper.getGroupMConf()
+    print "\ngetGroupMConf"
+    print "1 #########################################\n\n"
+    print cHelper.getProviderConf()
+    print "\ngetProviderConf"
+    print "2 #########################################\n\n"
+    print cHelper.getConsumerConf()
+    print "\ngetConsumerConf"
+    print "3 #########################################\n\n"
+    print cHelper.getAvailTid()
+    print "\ngetAvailTid"
+    print "4 #########################################\n\n"
+    print cHelper.getTimeSlotBookingTable()
+    print "\ngetTimeSlotBookingTable"
+    print "5 #########################################\n\n"
+    print cHelper.getReleaseCandidates()
+    print "\ngetReleaseCandidates"
+    print "6 #########################################\n\n"
+    print cHelper.getUserConsumers()
+    print "\ngetUserConsumers"
+    print "7 #########################################\n\n"
+    print cHelper.getTagsManager()
+    print "\ngetTagsManager"
+    print "8 #########################################\n\n"

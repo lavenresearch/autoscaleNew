@@ -2,6 +2,7 @@ from utils.autoScaleLog import autoscaleLog
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from interfaces import getUsageInfo
+import sys,os
 
 class groupChooser:
     logger = None
@@ -9,9 +10,8 @@ class groupChooser:
     cHelper = None
     def __init__(self):
         self.logger = autoscaleLog(__file__)
-        self.logger.writeLog(sys.argv)
         self.sConf = staticConfig()
-        infoCLocation = sConf.getInfoCLocation()
+        infoCLocation = self.sConf.getInfoCLocation()
         self.cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
 
     def chooseGroup(self, tagList):
@@ -22,9 +22,9 @@ class groupChooser:
             n = 0        
             for tag in tagList:
                 if tag in tagsl:
-                    n++
+                    n += 1
             if n == tagNum:
-            groupList.append(gname)
+                groupList.append(gname)
         self.logger.writeLog(groupList)
         return groupList
 

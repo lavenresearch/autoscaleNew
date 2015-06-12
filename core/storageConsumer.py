@@ -51,9 +51,10 @@ class storageConsumer():
 
     def loadConf(self):
         consumerID = self.hostIP
-        remoteConf = self.cHelper.getConsumerConf().get(consumerID)
-        if remoteConf != None:
-            self.conf = remoteConf
+        remoteConf = self.cHelper.getConsumerConf()
+        remoteConsumerConf = remoteConf.get(consumerID)
+        if remoteConsumerConf != None:
+            self.conf = remoteConsumerConf
             return
         hostName = self.executeCmd("hostname").split("\n")[0]
         remoteIQN = "iqn.dsal.consumer:"+hostName+"."+"disk"
@@ -65,7 +66,8 @@ class storageConsumer():
         self.conf["remoteDiskAmount"] = remoteDiskAmount
         self.conf["consumerLocation"] = consumerLocation
         self.conf["consumerID"] = consumerID
-        remoteConf[consumerID] = self.conf
+        # remoteConf[consumerID] = self.conf
+        remoteConsumerConf = self.conf
         self.cHelper.setConsumerConf(remoteConf)
 
     def getDeviceSize(self,devicepathDev):
@@ -88,7 +90,7 @@ class storageConsumer():
             devicesDev.append(dpathdev)
         return devicesDev
 
-    def requestStorage(self,groupName,stepSize):
+    def requestStorage(self,groupName,stepSize,mode):
         extraDeviceConf = {}
         remoteConsumersConf = self.cHelper.getConsumerConf()
         remoteConsumerConf = remoteConsumersConf[self.conf["consumerID"]]
@@ -138,17 +140,23 @@ class storageConsumer():
         extraDeviceConf["localDeviceMap"] = newDevices
 
         # update Information center
-
+        
         for d in newDevices:
             consuemrInfo = {"consumerLocation":self.hostIP,"localDeviceMap":str(d)}
             remoteGroupManagerConf["consumersLoaded"].append(consuemrInfo)
+            if mode == "extra":
+                releaseCandidateKey = str(d)+"@"+self.hostIP
+                releaseCandidates = self.cHelper.getReleaseCandidates()
+                if releaseCandidates == None:
+                    releaseCandidates = {}
+                releaseCandidates[releaseCandidateKey] = int(stepSize)
+        self.cHelper.setReleaseCandidates(releaseCandidates)
         self.cHelper.setGroupMConf(remoteGroupManagersConf)
         remoteConsumerConf["extraDevicesList"].append(extraDeviceConf)
         self.cHelper.setConsumerConf(remoteConsumersConf)
         return newDevices
 
     def releaseStorage(self, localDeviceMap):
-        '''TODO 更新GroupManagerConf["consumersLoaded"]中的数据'''
         remoteConf = self.cHelper.getConsumerConf()
         consumerID = self.conf["consumerID"]
         consumserConf = remoteConf[consumerID]
@@ -166,6 +174,11 @@ class storageConsumer():
         consumserConf["remoteDiskAmount"] -= 1
         groupMsConf = self.cHelper.getGroupMConf()
         groupMConf = groupMsConf.get(deviceInfo["groupName"])
+        if groupMConf == None:
+            print "group conf information do not exist"
+            self.logger.writeLog("group conf information do note exist!")
+            self.logger.shutdownLog()
+            sys.exit(1)
         gmIP = str(groupMConf["gmIP"])
 
         unloadDeviceCmd = "iscsiadm -m node -T "+deviceInfo["remoteIQN"]+" -p "+gmIP+" -u"
@@ -175,19 +188,20 @@ class storageConsumer():
         removeLVCmd = "lvchange -a n "+deviceInfo["remoteLVPath"]+" && lvremove "+deviceInfo["remoteLVPath"]
         self.remoteCmd(removeLVCmd, gmIP)
         self.cHelper.setConsumerConf(remoteConf)
-        remoteGroupManagersConf = self.cHelper.getGroupMConf()
-        remoteGroupManagerConf = remoteGroupManagersConf[groupName]
-        if remoteGroupManagerConf == None:
-            print "group conf information do not exist"
-            self.logger.writeLog("Device to be released do note exist!")
-            self.logger.shutdownLog()
-            sys.exit(1)
-        groupConsumerLoaded = remoteGroupManagerConf.get("consumersLoaded")
+        #remoteGroupManagersConf = self.cHelper.getGroupMConf()
+        #remoteGroupManagerConf = remoteGroupManagersConf[groupName]        
+        groupConsumerLoaded = groupMConf.get("consumersLoaded")
         if groupConsumerLoaded == None:
+            print "groupConsumerLoaded key do not exist"
             sys.exit(1)
         consuemrInfo = {"consumerLocation":self.hostIP,"localDeviceMap":localDeviceMap}
         groupConsumerLoaded.remove(consuemrInfo)
-        self.cHelper.setGroupMConf(remoteGroupManagersConf)
+        self.cHelper.setGroupMConf(groupMsConf)
+        releaseCandidates = self.cHelper.getReleaseCandidates()
+	releaseCandidateKey = localDeviceMap+"@"+self.hostIP
+	if releaseCandidates.has_key(releaseCandidateKey) == True:
+            releaseCandidates.pop(releaseCandidateKey)
+        self.cHelper.setReleaseCandidates(releaseCandidates)
 
 if __name__ == '__main__':
     consumer = storageConsumer()

@@ -84,8 +84,22 @@ class storageProvider():
         self.logger.shutdownLog()
 
     def stopProvider(self):
-        cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+self.conf["tid"]
+	confRemote = self.cHelper.getProviderConf()
+	groupConfRemote = confRemote.get(self.conf["deviceGroup"])
+        if groupConfRemote == None:
+            return False
+	deviceConfRemote = groupConfRemote.get(self.conf["deviceName"]+self.hostIP)
+	if deviceConfRemote == None:
+	    return False
+        tid = deviceConfRemote.get("tid")
+        cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+tid
         self.executeCmd(cmdStopProvider)
+	atid = self.cHelper.getAvailTid()
+        tid = atid.get(self.hostIP)
+        if tid != None:
+            atid[self.hostIP] = tid-1
+            self.cHelper.setAvailTid(atid)
+
         self.updateInfoCenter(self.conf,'remove')
 
 

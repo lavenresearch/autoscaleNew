@@ -27,7 +27,7 @@ def run(arg):
         consumers = []
     userConsumersConf = {}
     for consumer in consumers:
-        conf = consumerConf.get(consumer)
+        conf = consumersConf.get(consumer)
         if conf != None:
             userConsumersConf[consumer] = conf
     logger.writeLog(userConsumersConf)
