@@ -139,12 +139,16 @@ class storageConsumer():
 
         # update Information center
 
+        for d in newDevices:
+            consuemrInfo = {"consumerLocation":self.hostIP,"localDeviceMap":str(d)}
+            remoteGroupManagerConf["consumersLoaded"].append(consuemrInfo)
         self.cHelper.setGroupMConf(remoteGroupManagersConf)
         remoteConsumerConf["extraDevicesList"].append(extraDeviceConf)
         self.cHelper.setConsumerConf(remoteConsumersConf)
         return newDevices
 
     def releaseStorage(self, localDeviceMap):
+        '''TODO 更新GroupManagerConf["consumersLoaded"]中的数据'''
         remoteConf = self.cHelper.getConsumerConf()
         consumerID = self.conf["consumerID"]
         consumserConf = remoteConf[consumerID]
@@ -171,6 +175,19 @@ class storageConsumer():
         removeLVCmd = "lvchange -a n "+deviceInfo["remoteLVPath"]+" && lvremove "+deviceInfo["remoteLVPath"]
         self.remoteCmd(removeLVCmd, gmIP)
         self.cHelper.setConsumerConf(remoteConf)
+        remoteGroupManagersConf = self.cHelper.getGroupMConf()
+        remoteGroupManagerConf = remoteGroupManagersConf[groupName]
+        if remoteGroupManagerConf == None:
+            print "group conf information do not exist"
+            self.logger.writeLog("Device to be released do note exist!")
+            self.logger.shutdownLog()
+            sys.exit(1)
+        groupConsumerLoaded = remoteGroupManagerConf.get("consumersLoaded")
+        if groupConsumerLoaded == None:
+            sys.exit(1)
+        consuemrInfo = {"consumerLocation":self.hostIP,"localDeviceMap":localDeviceMap}
+        groupConsumerLoaded.remove(consuemrInfo)
+        self.cHelper.setGroupMConf(remoteGroupManagersConf)
 
 if __name__ == '__main__':
     consumer = storageConsumer()

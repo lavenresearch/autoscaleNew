@@ -2,7 +2,8 @@ from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 import sys,os
-import json
+
+# python main.py deleteGroupInterface groupname
 
 def executeCmd(cmd):
     logger = autoscaleLog(__file__)
@@ -15,24 +16,20 @@ def executeCmd(cmd):
     return output
 
 def run(arg):
-    username = arg[0]
-    logger = autoscaleLog(__file__)
     sConf = staticConfig()
+    path = sConf.getPath()
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper(infoCLocation["ipInfoC"],infoCLocation["portInfoC"])
-    consumersConf = cHelper.getConsumerConf()
-    userConsumers = cHelper.getUserConsumers()
-    consumers = userConsumers.get(username)
-    if consumers == None:
-        consumers = []
-    userConsumersConf = {}
-    for consumer in consumers:
-        conf = consumerConf.get(consumer)
-        if conf != None:
-            userConsumersConf[consumer] = conf
-    logger.writeLog(userConsumersConf)
-    print json.dumps(userConsumersConf)
-    logger.shutdownLog()
+    groupName = arg[0]
+    gmsConf = cHelper.getGroupMConf()
+    gmConf = gmsConf.get(groupName)
+    if gmConf == None:
+        print "group do not exist"
+        return False
+    gmIP = gmConf.get("gmIP")
+    deleteGroupCmd = "ssh -t root@"+gmIP+" \"python "+path+"main.py deleteGroup "+groupName+"\""
+    executeCmd(deleteGroupCmd)
 
 if __name__ == '__main__':
-    run([])
+    groupName = sys.argv[1]
+    run([groupName])

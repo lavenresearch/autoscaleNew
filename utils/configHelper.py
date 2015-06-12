@@ -32,7 +32,7 @@ class configHelper():
         '''
         group manager conf in redis:
         {
-            groupname1:{"gmIP":"192.168.3.161","currentTid":152,"devicesLoaded":[deviceID1,deviceID2,]},
+            groupname1:{"gmIP":"192.168.3.161","currentTid":152,"devicesLoaded":[deviceID1,deviceID2,],"consumersLoaded":[{"consumerLocation":"192.168.3.109","localDeviceMap":"/dev/sdb"}]},
             groupname2:{},
         }
         '''

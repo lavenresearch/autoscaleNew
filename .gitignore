@@ -3,3 +3,4 @@ packages
 *.py~
 *.log
 *.rdb
+*sublime*

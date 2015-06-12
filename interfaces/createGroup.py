@@ -22,7 +22,7 @@ def run(arg):
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
     providersConf = cHelper.getProviderConf()
     if providersConf.get(groupName) == None:
-        providersConf[groupName] = {"tags":tagList}
+        # providersConf[groupName] = {"tags":tagList}
         cHelper.setProviderConf(providersConf)
     logger.writeLog(providersConf)
     print json.dumps(providersConf)
@@ -33,6 +33,7 @@ def run(arg):
         gmConf[groupName]["currentTid"] = 500+200*groupAmount
         gmConf[groupName]["gmIP"] = sConf.getGroupMIP()
         gmConf[groupName]["devicesLoaded"] = []
+        gmConf[groupName]["consumersLoaded"] = []
         cHelper.setGroupMConf(gmConf)
     logger.writeLog(gmConf)
     print json.dumps(gmConf)

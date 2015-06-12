@@ -1,6 +1,7 @@
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
+from interfaces import releaseExtraStorage
 import os,glob,re,time,sys
 import socket
 import fcntl
@@ -8,27 +9,44 @@ import struct
 
 class remoteDevice():
     deviceID = ""
+    deviceName = ""
     deviceLocation = ""
     deviceIQN = ""
-    def __init__(self, deviceID, deviceLocation, deviceIQN):
+    deviceTid = ""
+    def __init__(self, deviceID, deviceLocation, deviceIQN, deviceTid):
         self.deviceID = deviceID
+        self.deviceName = deviceName
         self.deviceLocation = deviceLocation
         self.deviceIQN = deviceIQN
+        self.deviceTid = str(deviceTid)
     def executeCmd(self,cmd):
         print cmd
         tmp = os.popen(cmd).read()
         print tmp
         return tmp
+    def remoteCmd(self,rcmd,remoteip):
+        cmd = "ssh -t root@"+remoteip+" \""+rcmd+"\""
+        return self.executeCmd(cmd)
     def iscsiLogin(self):
         cmdDiscovery = "iscsiadm -m discovery -t sendtargets -p " + self.deviceLocation
         cmdLogin = "iscsiadm -m node -T " + self.deviceIQN + " -p " + self.deviceLocation + " -l"
         self.executeCmd(cmdDiscovery)
         self.executeCmd(cmdLogin)
+    def iscsiLogout(self):
+        cmdLogout = "iscsiadm -m node -T " + self.deviceIQN + " -p " + self.deviceLocation + "-u"
+        self.executeCmd(cmdLogout)
+    # def stopProvider(self):
+    #     cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+self.deviceTid
+    #     self.remoteCmd(cmdStopProvider, self.deviceLocation)
+    def getDeviceID(self):
+        return self.deviceID
     def printDevice(self):
         print "DEVICE INFO"
         print self.deviceID
+        print self.deviceName
         print self.deviceLocation
         print self.deviceIQN
+        print self.deviceTid
 
 class groupManager():
     ipInfoC = ""
@@ -41,6 +59,7 @@ class groupManager():
     groupManagerConf = {}
     initialCmds = []
     logger = None
+    path = ""
     def __init__(self, groupName):
         sConf = staticConfig()
         self.ipInfoC = sConf.getInfoCLocation()["ipInfoC"]
@@ -48,6 +67,7 @@ class groupManager():
         self.cHelper = configHelper(self.ipInfoC,self.portInfoC)
         hostName = self.executeCmd("hostname")
         iframe = sConf.getHostInterface(hostName)
+        self.path = sConf.getPath()
         self.hostIP = self.getLocalIP(iframe)
         self.groupName = groupName
         self.vgName = self.groupName + "VG"
@@ -75,7 +95,7 @@ class groupManager():
         confGroupRemote = confRemote[self.groupName]
         for conf in confGroupRemote.values():
             deviceID = conf["deviceName"]+conf["deviceLocation"]
-            device = remoteDevice(deviceID, conf["deviceLocation"], conf["deviceIQN"])
+            device = remoteDevice(deviceID, conf["deviceName"], conf["deviceLocation"], conf["deviceIQN"], conf["tid"])
             self.devicesList.append(device)
 
     def setGroupManagerConf(self):
@@ -165,6 +185,71 @@ class groupManager():
             confGroupRemote["devicesLoaded"].append(d.deviceID)
         # print confRemote
         self.cHelper.setGroupMConf(confRemote)
+
+    def clearGroup(self):
+        remoteGroupManagersConf = self.configHelper.getGroupMConf()
+        remoteGroupManagerConf = remoteGroupManagersConf.get(self.groupName)
+        if remoteGroupManagerConf == None:
+            print "group do not exist!"
+            return False
+        groupConsumerLoaded = remoteGroupManagerConf.get("consumersLoaded")
+        for consumer in groupConsumerLoaded:
+            consumerLocation = consumer["consumerLocation"]
+            localDeviceMap = consumer["localDeviceMap"]
+            arg = [consumerLocation,localDeviceMap]
+            releaseExtraStorage.run(arg)
+        removeVGCmd = "vgremove "+self.groupName+"VG"
+        self.executeCmd(removeVGCmd)
+        for device in self.devicesList:
+            device.iscsiLogout()
+            cmdStopProvider = "ssh -t root@"+device.deviceLocation+" \"python "+self.path+"main.py stopProvider "+device.deviceName+" "+self.groupName+"\""
+            self.executeCmd(cmdStopProvider)
+            # device.stopProvider()
+
+        # update information center
+
+        gmConf = cHelper.getGroupMConf()
+        gmConf[groupName] = {}
+        currentTid = gmConf[groupName]["currentTid"]
+        gmConf[groupName]["currentTid"] = (currentTid-500)/200+500
+        gmConf[groupName]["gmIP"] = sConf.getGroupMIP()
+        gmConf[groupName]["devicesLoaded"] = []
+        gmConf[groupName]["consumersLoaded"] = []
+        cHelper.setGroupMConf(gmConf)
+
+    def deleteGroup(self):
+        self.clearGroup()
+        gmConf = cHelper.getGroupMConf()
+        gmConf.pop(self.groupName)
+        cHelper.setGroupMConf(gmConf)
+
+        providerConf = cHelper.getProviderConf()
+        providerConf.pop(self.groupName)
+        cHelper.setGroupMConf(providerConf)
+        
+        tagsManager = cHelper.getTagsManager()
+        tagsManager.pop(self.groupName)
+        cHelper.setTagsManager(tagsManager)
+        return True
+        # providerConf = self.configHelper.getProviderConf()
+        # groupProviderConf = providerConf.get(self.groupName)
+        # if groupProviderConf == None:
+        #     print "group do not exist!"
+        #     return False
+        # remoteGroupManagersConf = self.configHelper.getGroupMConf()
+        # remoteGroupManagerConf = remoteGroupManagersConf.get(self.groupName)
+        # if remoteGroupManagerConf == None:
+        #     print "group do not exist!"
+        #     return False
+        # groupDevicesLoaded = remoteGroupManagerConf.get("devicesLoaded")
+        # for deviceID in groupDevicesLoaded:
+        #     deviceConf = groupProviderConf.get(deviceID)
+        #     if deviceConf != None:
+        #         deviceIQN = deviceConf["deviceIQN"]
+        #         deviceLocation = deviceConf["deviceLocation"]
+        #         unloadDeviceCmd = "iscsiadm -m node -T "+deviceIQN+" -p "+deviceLocation+" -u"
+        #         self.executeCmd(unloadDeviceCmd)
+
 
 if __name__ == '__main__':
     groupName = "lowSpeedGroup"

@@ -80,10 +80,16 @@ class storageProvider():
     def exportStorage(self):
         cmd = self.path+"deployStorage.sh "+self.conf["deviceIQN"]+" "+self.conf["deviceName"]+" "+self.conf["tid"]+" "+self.conf["groupManagerIP"]
         self.executeCmd(cmd)
-        self.updateInfoCenter(self.conf)
+        self.updateInfoCenter(self.conf,'add')
         self.logger.shutdownLog()
 
-    def updateInfoCenter(self,conf):
+    def stopProvider(self):
+        cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+self.conf["tid"]
+        self.executeCmd(cmdStopProvider)
+        self.updateInfoCenter(self.conf,'remove')
+
+
+    def updateInfoCenter(self,conf,mode):
         '''
         conf in remote.
         {
@@ -96,7 +102,10 @@ class storageProvider():
         if confGroupRemote == None:
             confGroupRemote = {}
         deviceID = conf["deviceName"]+conf["deviceLocation"]
-        confGroupRemote[deviceID] = conf
+        if mode == "add":
+            confGroupRemote[deviceID] = conf
+        if mode == "remove":
+            confGroupRemote.pop(deviceID)
         confRemote[conf["deviceGroup"]] = confGroupRemote
         self.cHelper.setProviderConf(confRemote)
 
