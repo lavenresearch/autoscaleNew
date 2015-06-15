@@ -14,8 +14,10 @@ class codecSwitcher():
             return sNew
         if isinstance(s,unicode) == True:
             return s
-        else:
+        if isinstance(s,str) == True:
             return unicode(s, self.codeName)
+        else:
+            return unicode(str(s), self.codeName)
 
 if __name__ == '__main__':
     cswitcher = codecSwitcher()

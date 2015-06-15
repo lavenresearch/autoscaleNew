@@ -111,9 +111,26 @@ def run(arg):
 
     requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" booked\""
     print requestStorageCmd
-    executedCmd(requestStorageCmd)
+    executeCmd(requestStorageCmd)
 
-    userBookingForUserForGroup[ctKey] = bookedStorageSize - stepSize
+    # userBookingForUserForGroup[ctKey] = bookedStorageSize - stepSize
+    startKeyInt = int(ctKey)
+    timeKeys = userBookingForUserForGroup.keys()
+    timeKeysInt = []
+    for timeKey in timeKeys:
+        timeKeysInt.append(int(timeKey))
+    timeKeysInt.sort()
+    for i in xrange(len(timeKeysInt)):
+        timeKeyInt = timeKeysInt[i]
+        if timeKeyInt < startKeyInt:
+            userBookingForUserForGroup.pop(cswitcher.getEncode(timeKeyInt))
+        elif timeKeyInt == startKeyInt:
+            timeKey = cswitcher.getEncode(timeKeyInt)
+            timeKeyBookedSize = userBookingForUserForGroup[timeKey]
+            userBookingForUserForGroup[timeKey] = timeKeyBookedSize - stepSize
+            startKeyInt += 1
+        else:
+            break
     cHelper.setUserBookingTable(userBooking)
     print "get booked storage succeded"
     return True
