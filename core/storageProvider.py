@@ -1,6 +1,7 @@
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
+from utils.executeCmd import executeCmdSp
 import os,sys
 import socket
 import fcntl
@@ -50,7 +51,8 @@ class storageProvider():
 
     def executeCmd(self,cmd):
         print cmd
-        tmp = os.popen(cmd).read()
+        #tmp = os.popen(cmd).read()
+        tmp = executeCmdSp(cmd)
         print tmp
         return tmp
 

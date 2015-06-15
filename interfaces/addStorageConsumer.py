@@ -1,6 +1,7 @@
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
+from utils.executeCmd import executeCmdSp
 import sys,os
 
 # python addStorageConsumer.py user1 consumerLocation
@@ -9,7 +10,8 @@ def executeCmd(cmd):
     logger = autoscaleLog(__file__)
     print cmd
     logger.writeLog(cmd)
-    output = os.popen(cmd).read()
+    #output = os.popen(cmd).read()
+    output = executeCmdSp(cmd)
     print output
     logger.writeLog(output)
     logger.shutdownLog()

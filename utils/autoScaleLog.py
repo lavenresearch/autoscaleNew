@@ -1,10 +1,14 @@
 import logging
+import json
+from utils.codecSwitcher import codecSwitcher
 
 class autoscaleLog():
     """docstring for autoscaleLog"""
     logSource = ""
+    cswitcher = None
 
     def __init__(self, source):
+        self.cswitcher = codecSwitcher()
         self.logSource = source
         self.logPath = "./suyiAutoscale.log"
         # logging.basicConfig(filename=self.flogPath,filemode='a',level=logging.DEBUG,format='%(asctime)s - %(filename)s[func:%(funcName)s ; line:%(lineno)d] %(levelname)s\t: %(message)s')
@@ -12,7 +16,8 @@ class autoscaleLog():
         logging.basicConfig(filename=self.logPath,filemode='a',level=logging.DEBUG,format='%(asctime)s - '+self.logSource+'\t: %(message)s')
 
     def writeLog(self,msg):
-        msg = str(msg)
+        # msg = self.cswitcher.getEncode(msg)
+        msg = json.dumps(msg)
         logging.debug(msg)
 
     def shutdownLog(self):

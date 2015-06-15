@@ -2,6 +2,7 @@ from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 from interfaces import releaseExtraStorage
+from utils.executeCmd import executeCmdSp
 import os,glob,re,time,sys
 import socket
 import fcntl
@@ -21,7 +22,8 @@ class remoteDevice():
         self.deviceTid = str(deviceTid)
     def executeCmd(self,cmd):
         print cmd
-        tmp = os.popen(cmd).read()
+        #tmp = os.popen(cmd).read()
+        tmp = executeCmdSp(cmd)
         print tmp
         return tmp
     def remoteCmd(self,rcmd,remoteip):
@@ -54,6 +56,7 @@ class groupManager():
     cHelper = None
     hostIP = ""
     groupName = ""
+    groupNameHash = ""
     vgName = ""
     devicesList =[]
     groupManagerConf = {}
@@ -70,7 +73,8 @@ class groupManager():
         self.path = sConf.getPath()
         self.hostIP = self.getLocalIP(iframe)
         self.groupName = groupName
-        self.vgName = self.groupName + "VG"
+        self.groupNameHash = str(abs(hash(groupName)))
+        self.vgName = self.groupNameHash + "VG"
         self.loadConf()
         for cmd in self.initialCmds:
             self.executeCmd(cmd)
@@ -78,7 +82,8 @@ class groupManager():
 
     def executeCmd(self,cmd):
         print cmd
-        tmp = os.popen(cmd).read()
+        #tmp = os.popen(cmd).read()
+        tmp = executeCmdSp(cmd)
         print tmp
         return tmp
 
@@ -198,7 +203,8 @@ class groupManager():
             localDeviceMap = consumer["localDeviceMap"]
             arg = [consumerLocation,localDeviceMap]
             releaseExtraStorage.run(arg)
-        removeVGCmd = "vgremove "+self.groupName+"VG"
+        # removeVGCmd = "vgremove "+self.groupName+"VG"
+        removeVGCmd = "vgremove "+self.vgName
         self.executeCmd(removeVGCmd)
         for device in self.devicesList:
             # TODO add storage provider mapping to groupManager localdisk 

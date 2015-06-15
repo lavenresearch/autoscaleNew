@@ -32,23 +32,27 @@ class groupChooser:
         stKey = startTime/3600
         etKey = endTime/3600
         usageInfo = getUsageInfo.run([])
-        availableSpace = usageInfo[groupName].get('groupSize')
+        availableSpace = int(usageInfo[groupName].get('groupSize'))
+	size = int(size)
         if size > availableSpace:
+            print "first"
             self.logger.writeLog("Booking resources failed, no enough space!")
             return False
         timeslotBooking = self.cHelper.getTimeSlotBookingTable()
-        timeslotBookingForGroup = timeslotBooking.get(groupName)
+        timeslotBookingForGroup = timeslotBooking.get(groupName)        
         if timeslotBookingForGroup == None:
             timeslotBookingForGroup = {}
         for t in xrange(stKey,etKey):
-            asize = timeslotBookingForGroup.get(t)
+            asize = timeslotBookingForGroup.get(str(t))            
             if asize == None:
                 asize = availableSpace
             if size > asize:
                 self.logger.writeLog("Booking resources failed, no enough space!")
                 return False
-            timeslotBookingForGroup[t] = asize - size
+            timeslotBookingForGroup[str(t)] = asize - size
         timeslotBooking[groupName] = timeslotBookingForGroup
+        print "prepare to SET"
+        print timeslotBooking
         self.cHelper.setTimeSlotBookingTable(timeslotBooking)
         self.logger.writeLog("Booking resources successfully!")
         return True

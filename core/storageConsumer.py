@@ -1,6 +1,7 @@
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
+from utils.executeCmd import executeCmdSp
 import os,glob,re,time,sys
 import socket
 import fcntl
@@ -40,7 +41,8 @@ class storageConsumer():
     def executeCmd(self,cmd):
         print cmd
         self.logger.writeLog(cmd)
-        tmp = os.popen(cmd).read()
+        #tmp = os.popen(cmd).read()
+        tmp = executeCmdSp(cmd)
         print tmp
         self.logger.writeLog(tmp)
         return tmp
@@ -98,7 +100,7 @@ class storageConsumer():
         remoteGroupManagerConf = remoteGroupManagersConf[groupName]
         remoteConsumerConf["remoteDiskAmount"] += 1
         extraDeviceConf["remoteLV"] = remoteConsumerConf["remoteLV"]+str(remoteConsumerConf["remoteDiskAmount"])
-        extraDeviceConf["remoteVG"] = groupName+"VG"
+        extraDeviceConf["remoteVG"] = str(abs(hash(groupName)))+"VG"
         extraDeviceConf["remoteLVPath"] = "/dev/"+extraDeviceConf["remoteVG"]+"/"+extraDeviceConf["remoteLV"]
         extraDeviceConf["remoteIQN"] = remoteConsumerConf["remoteIQN"]+str(remoteConsumerConf["remoteDiskAmount"])
         extraDeviceConf["groupName"] = groupName

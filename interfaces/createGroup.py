@@ -1,6 +1,7 @@
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
+from utils.codecSwitcher import codecSwitcher  
 import sys
 import json
 
@@ -13,10 +14,14 @@ import json
 # python createGroup.py highSpeedGroup tag1 tag2 tag3 ...
 
 def run(arg):
+    cswitcher = codecSwitcher()
     logger = autoscaleLog(__file__)
     logger.writeLog(sys.argv)
-    groupName = arg[0]
-    tagList = arg[1:]
+    groupName = cswitcher.getEncode(arg[0])
+    #tagList = []
+    #for a in arg[1:]:
+    #    tagList.append(unicode(a))
+    tagList = cswitcher.getEncode(arg[1:])
     sConf = staticConfig()
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))

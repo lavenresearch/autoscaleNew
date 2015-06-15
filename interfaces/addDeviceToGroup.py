@@ -1,6 +1,8 @@
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
+from utils.codecSwitcher import codecSwitcher
+from utils.executeCmd import executeCmdSp
 import sys,os
 
 # python addDeviceToGroup.py 192.168.1.137 /dev/loop0 highSpeedGroup
@@ -9,16 +11,18 @@ def executeCmd(cmd):
     logger = autoscaleLog(__file__)
     print cmd
     logger.writeLog(cmd)
-    output = os.popen(cmd).read()
+    #output = os.popen(cmd).read()
+    output = executeCmdSp(cmd)
     print output
     logger.writeLog(output)
     logger.shutdownLog()
     return output
 
 def run(arg):
+    cswitcher = codecSwitcher()
     deviceLocation = arg[0]
     deviceName = arg[1]
-    groupName = arg[2]
+    groupName = cswitcher.getEncode(arg[2])
     sConf = staticConfig()
     path = sConf.getPath()
     infoCLocation = sConf.getInfoCLocation()

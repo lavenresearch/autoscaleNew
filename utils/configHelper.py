@@ -129,7 +129,7 @@ class configHelper():
         return timeslotBooking
     def setTimeSlotBookingTable(self, timeslotBooking):
         timeslotBookingJson = json.dumps(timeslotBooking)
-        self.setConfig(self.timeslotBookingkey, timeslotBookingJson)
+        self.setConfig(self.timeslotBookingKey, timeslotBookingJson)
 
     def getReleaseCandidates(self):
         '''
@@ -188,7 +188,7 @@ class configHelper():
 
 
 if __name__ == '__main__':
-    ipInfoC = "127.0.0.1"
+    ipInfoC = "192.168.16.123"
     portInfoC = 6379
     cHelper = configHelper(ipInfoC, portInfoC)
     print cHelper.getGroupMConf()
@@ -215,3 +215,5 @@ if __name__ == '__main__':
     print cHelper.getTagsManager()
     print "\ngetTagsManager"
     print "8 #########################################\n\n"
+    print cHelper.getUserBookingTable()
+    print "9 #########################################\n\n"

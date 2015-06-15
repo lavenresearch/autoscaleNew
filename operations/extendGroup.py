@@ -1,6 +1,7 @@
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
+from utils.codecSwitcher import codecSwitcher
 from core.groupManager import groupManager
 import sys
 
@@ -9,9 +10,11 @@ class extendGroup():
     groupManager = None
     cHelper = None
     logger = None
+    cswitcher = None
     def __init__(self,args):
         print args
-        self.groupName = args[0]
+        self.cswitcher = codecSwitcher()
+        self.groupName = self.cswitcher.getEncode(args[0])
         self.groupManager = groupManager(self.groupName)
         sConf = staticConfig()
         infoCLocation = sConf.getInfoCLocation()

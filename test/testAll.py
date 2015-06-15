@@ -1,3 +1,4 @@
+#coding=utf-8
 import sys
 from operations.extendGroup import extendGroup
 from operations.requestStorage import requestStorage
@@ -38,13 +39,13 @@ from interfaces import createGroup, addDeviceToGroup, addStorageConsumer, reques
 # ca32, ca07: storage providers(/dev/loop0, /dev/loop1)
 
 class testAll():
-    cgARG1 = ["high","tag1","tag2"]
+    cgARG1 = ["矿井口","tag1","tag2"]
     cgARG2 = ["low","tag3","tag4"]
 
     ascARG1 = ["user1","192.168.16.124"]
     #ascARG2 = ["192.168.3.62"]
 
-    adtgARG1 = ["192.168.16.124","/dev/loop0","high"]
+    adtgARG1 = ["192.168.16.124","/dev/loop0","矿井口"]
     adtgARG2 = ["192.168.16.124","/dev/loop1","low"]
     #adtgARG3 = ["192.168.16.124","/dev/loop0","high"]
     #adtgARG4 = ["192.168.16.124","/dev/loop1","low"]

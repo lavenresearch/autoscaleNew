@@ -1,6 +1,8 @@
 from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
+from utils.codecSwitcher import codecSwitcher
+from utils.executeCmd import executeCmdSp
 import sys,os
 
 # python main.py deleteGroupInterface groupname
@@ -8,19 +10,22 @@ import sys,os
 def executeCmd(cmd):
     logger = autoscaleLog(__file__)
     print cmd
-    logger.writeLog(cmd)
-    output = os.popen(cmd).read()
+    #cmd = unicode(cmd,'utf-8')
+    print [cmd]
+    output = executeCmdSp(cmd)
     print output
+    logger.writeLog(cmd)
     logger.writeLog(output)
     logger.shutdownLog()
     return output
 
 def run(arg):
+    cswitcher = codecSwitcher()
     sConf = staticConfig()
     path = sConf.getPath()
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper(infoCLocation["ipInfoC"],infoCLocation["portInfoC"])
-    groupName = arg[0]
+    groupName = cswitcher.getEncode(arg[0])
     gmsConf = cHelper.getGroupMConf()
     gmConf = gmsConf.get(groupName)
     if gmConf == None:
@@ -30,7 +35,7 @@ def run(arg):
     print gmIP
     print path
     print groupName
-    deleteGroupCmd = "ssh -t root@"+gmIP+" \"python "+path+"main.py deleteGroup "+groupName+"\""
+    deleteGroupCmd = u"ssh -t root@"+gmIP+u" \"python "+path+u"main.py deleteGroup "+groupName+u"\""
     executeCmd(deleteGroupCmd)
 
 if __name__ == '__main__':

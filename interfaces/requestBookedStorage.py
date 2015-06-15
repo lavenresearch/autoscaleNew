@@ -5,6 +5,8 @@ from utils.groupChooser import groupChooser
 from utils.timeManager import timeManager
 from interfaces import getUsageInfo
 from interfaces import releaseExtraStorage
+from utils.codecSwitcher import codecSwitcher
+from utils.executeCmd import executeCmdSp
 import sys,os,time
 
 # Needed arguments including:
@@ -25,13 +27,15 @@ def executeCmd(cmd):
     logger = autoscaleLog(__file__)
     print cmd
     logger.writeLog(cmd)
-    output = os.popen(cmd).read()
+    #output = os.popen(cmd).read()
+    output = executeCmdSp(cmd)
     print output
     logger.writeLog(output)
     logger.shutdownLog()
     return output
 
 def run(arg):
+    cswitcher = codecSwitcher()
     logger = autoscaleLog(__file__)
     logger.writeLog(arg)
     sConf = staticConfig()
@@ -40,8 +44,8 @@ def run(arg):
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
     userName = arg[0]
     consumerLocation = arg[1]
-    stepSize = arg[2]
-    tagList = arg[3:]
+    stepSize = int(arg[2])
+    tagList = cswitcher.getEncode(arg[3:])
     gchooser = groupChooser()
     groupList = gchooser.chooseGroup(tagList)
     if groupList == []:
@@ -51,20 +55,33 @@ def run(arg):
     # currentTime = time.time()
     timeM = timeManager()
     currentTime = timeM.getTime()
-    ctKey = currentTime/3600
+    # print "currentTime"
+    # print currentTime
+    ctKey = str(currentTime/3600)
+    # print "ctKey"
+    # print ctKey
     userBooking = cHelper.getUserBookingTable()
+    # print "userBooking GET"
+    # print userBooking
     userBookingForUser = userBooking.get(userName)
+    # print "userBookingForUser"
+    # print userBookingForUser
     if userBookingForUser == None:
         print "User did not book any storage"
         return False
     userBookingForUserForGroup = userBookingForUser.get(groupName)
+    # print "userBookingForUserForGroup"
+    # print userBookingForUserForGroup
     if userBookingForUserForGroup == None:
         print "User did not book storage for "+str(tagList)
         return False
     bookedStorageSize = userBookingForUserForGroup.get(ctKey)
+    # print "bookedStorageSize"
+    # print bookedStorageSize
     if bookedStorageSize == None:
         print "User did not book storage for this period"
         return False
+    bookedStorageSize = int(bookedStorageSize)
     if bookedStorageSize < stepSize:
         print "User do not have enough booked storage space"
         return False
@@ -93,8 +110,8 @@ def run(arg):
             releaseExtraStorage.run([consumerIP,deviceMap])
 
     requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" booked\""
-    print requestBookedStorage
-    # executedCmd(requestStorageCmd)
+    print requestStorageCmd
+    executedCmd(requestStorageCmd)
 
     userBookingForUserForGroup[ctKey] = bookedStorageSize - stepSize
     cHelper.setUserBookingTable(userBooking)

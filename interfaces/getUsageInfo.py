@@ -40,7 +40,7 @@ def run(arg):
     allInfo["usageInfo"] = usageInfo
     allInfo["tags"] = tagsM
     print json.dumps(allInfo)
-    return allInfo
+    return usageInfo
 
 if __name__ == '__main__':
     run([])
