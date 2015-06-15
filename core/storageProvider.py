@@ -93,7 +93,11 @@ class storageProvider():
 	if deviceConfRemote == None:
 	    return False
         tid = deviceConfRemote.get("tid")
-        cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+tid
+        # cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+tid
+        deviceIQN = deviceConfRemote.get("deviceIQN")
+        deviceName = deviceConfRemote.get("deviceName")
+        groupManagerIP = deviceConfRemote.get("groupManagerIP")
+        cmdStopProvider = "scst-remove.sh "+deviceIQN+" "+tid+" "+tid+" 0 "+deviceName+" "+groupManagerIP
         self.executeCmd(cmdStopProvider)
 	atid = self.cHelper.getAvailTid()
         tid = atid.get(self.hostIP)

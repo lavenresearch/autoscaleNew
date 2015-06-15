@@ -112,12 +112,14 @@ class storageConsumer():
         # createRemoteStorage
 
         self.remoteCmd("lvcreate -L "+str(extraDeviceConf["remoteSize"])+"M -n "+extraDeviceConf["remoteLV"]+" "+extraDeviceConf["remoteVG"], groupManagerIP)
-        status = self.remoteCmd("service tgtd status" , groupManagerIP)
-        if status.find("tgtd is stopped") != -1:
-            self.remoteCmd("service tgtd start" , groupManagerIP)
-        self.remoteCmd("tgtadm --lld iscsi --op new --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -T "+extraDeviceConf["remoteIQN"] , groupManagerIP)
-        self.remoteCmd("setenforce 0;tgtadm --lld iscsi --op new --mode logicalunit --tid "+str(extraDeviceConf["remoteTid"])+" --lun 1 -b "+extraDeviceConf["remoteLVPath"] , groupManagerIP)
-        self.remoteCmd("tgtadm --lld iscsi --op bind --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -I "+self.hostIP , groupManagerIP)
+        # self.remoteCmd("tgtadm --lld iscsi --op new --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -T "+extraDeviceConf["remoteIQN"] , groupManagerIP)
+        # self.remoteCmd("setenforce 0;tgtadm --lld iscsi --op new --mode logicalunit --tid "+str(extraDeviceConf["remoteTid"])+" --lun 1 -b "+extraDeviceConf["remoteLVPath"] , groupManagerIP)
+        # self.remoteCmd("tgtadm --lld iscsi --op bind --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -I "+self.hostIP , groupManagerIP)
+        remoteIQN = extraDeviceConf["remoteIQN"]
+        remoteTid = str(extraDeviceConf["remoteTid"]
+        remoteLVPath = extraDeviceConf["remoteLVPath"]
+        cmdScstCreate = "scst-create.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP 
+        self.remoteCmd(cmdScstCreate,groupManagerIP)
 
         # loadRemoteStorage
 
@@ -186,7 +188,12 @@ class storageConsumer():
         unloadDeviceCmd = "iscsiadm -m node -T "+deviceInfo["remoteIQN"]+" -p "+gmIP+" -u"
         self.executeCmd( unloadDeviceCmd)
         remoteTid = str(deviceInfo["remoteTid"])
-        self.remoteCmd("tgtadm --lld iscsi --op delete --mode target --tid "+remoteTid , gmIP)
+        # self.remoteCmd("tgtadm --lld iscsi --op delete --mode target --tid "+remoteTid , gmIP)
+        remoteIQN = deviceInfo["remoteIQN"]
+        remoteLVPath = deviceInfo["remoteLVPath"]
+        consumerIP = consumerConf["consumerLocation"]
+        cmdScstRemove = "scst-remove.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+consumerIP
+        self.remoteCmd(cmdScstRemove)
         removeLVCmd = "lvchange -a n "+deviceInfo["remoteLVPath"]+" && lvremove "+deviceInfo["remoteLVPath"]
         self.remoteCmd(removeLVCmd, gmIP)
         self.cHelper.setConsumerConf(remoteConf)

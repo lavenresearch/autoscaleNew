@@ -213,7 +213,6 @@ class groupManager():
             device.iscsiLogout()
             cmdStopProvider = "ssh -t root@"+device.deviceLocation+" \"python "+self.path+"main.py stopProvider "+device.deviceName+" "+self.groupName+"\""
             self.executeCmd(cmdStopProvider)
-            # device.stopProvider()
 
         # update information center
         
