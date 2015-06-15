@@ -52,6 +52,8 @@ class deployALL():
         self.executeRemoteCmd(rcmd, self.destinationIP)
         rcmd = "cd "+self.path+"packages/redis-2.10.3/ && python setup.py install"
         self.executeRemoteCmd(rcmd, self.destinationIP)
+        self.executeRemoteCmd("PATH=$PATH:"+self.path+"core/" ,self.destinationIP)
+        self.executeRemoteCmd("export $PATH")
 
 
 

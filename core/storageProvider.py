@@ -13,7 +13,6 @@ class storageProvider():
     cHelper = None
     hostIP = ""
     conf = {}
-    # initialCmds = ["dos2unix *","chmod +x *","service iptable stop","setenforce 0","lvmconf --disable-cluster"]
     initialCmds = []
     logger = None
     path = "/usr/local/src/suyiAutoscale/src/"
