@@ -36,7 +36,8 @@ else
     echo "Too much parameters!"
 fi
 
-./scst-create.sh &deviceiqn $tid $tid 0 $devicepath $gmip
+scst-create.sh $deviceiqn $tid $tid 0 $devicepath $gmip
+echo scst-remove.sh $deviceiqn $tid $tid 0 $devicepath $gmip > $tid.sh
 
 # tgtadm --lld iscsi --op new --mode target --tid $tid -T $deviceiqn
 # setenforce 0 # have to gurantee SELinux off in order to use file instead block device.

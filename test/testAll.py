@@ -39,16 +39,16 @@ from interfaces import createGroup, addDeviceToGroup, addStorageConsumer, reques
 # ca32, ca07: storage providers(/dev/loop0, /dev/loop1)
 
 class testAll():
-    cgARG1 = ["矿井口","tag1","tag2"]
+    cgARG1 = ["high","tag1","tag2"]
     cgARG2 = ["low","tag3","tag4"]
 
     ascARG1 = ["user1","192.168.16.124"]
     #ascARG2 = ["192.168.3.62"]
 
-    adtgARG1 = ["192.168.16.124","/dev/loop0","矿井口"]
-    adtgARG2 = ["192.168.16.124","/dev/loop1","low"]
-    #adtgARG3 = ["192.168.16.124","/dev/loop0","high"]
-    #adtgARG4 = ["192.168.16.124","/dev/loop1","low"]
+    adtgARG1 = ["192.168.0.98","/dev/loop0","high"]
+    adtgARG2 = ["192.168.0.98","/dev/loop1","low"]
+    adtgARG3 = ["192.168.0.98","/dev/loop2","high"]
+    adtgARG4 = ["192.168.0.98","/dev/loop3","low"]
 
     rqesARG1 = ["192.168.16.124",150,"tag1","tag2"]
     rqesARG2 = ["192.168.16.124",250,"tag3","tag4"]
@@ -88,8 +88,8 @@ class testAll():
             print "########################\n\n"
             addDeviceToGroup.run(self.adtgARG1)
             addDeviceToGroup.run(self.adtgARG2)
-            #addDeviceToGroup.run(self.adtgARG3)
-            #addDeviceToGroup.run(self.adtgARG4)
+            addDeviceToGroup.run(self.adtgARG3)
+            addDeviceToGroup.run(self.adtgARG4)
             self.viewResult()
         if stepCode <= 4:
             print "\n\n########################"

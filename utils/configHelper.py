@@ -188,7 +188,7 @@ class configHelper():
 
 
 if __name__ == '__main__':
-    ipInfoC = "192.168.16.123"
+    ipInfoC = "192.168.12.100"
     portInfoC = 6379
     cHelper = configHelper(ipInfoC, portInfoC)
     print cHelper.getGroupMConf()
@@ -216,4 +216,5 @@ if __name__ == '__main__':
     print "\ngetTagsManager"
     print "8 #########################################\n\n"
     print cHelper.getUserBookingTable()
+    print "\nuserBookingTable"
     print "9 #########################################\n\n"

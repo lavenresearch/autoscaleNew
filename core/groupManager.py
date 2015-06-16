@@ -3,6 +3,7 @@ from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 from interfaces import releaseExtraStorage
 from utils.executeCmd import executeCmdSp
+from utils.codecSwitcher import codecSwitcher
 import os,glob,re,time,sys
 import socket
 import fcntl
@@ -73,7 +74,8 @@ class groupManager():
         self.path = sConf.getPath()
         self.hostIP = self.getLocalIP(iframe)
         self.groupName = groupName
-        self.groupNameHash = str(abs(hash(groupName)))
+        cswitcher = codecSwitcher()
+        self.groupNameHash = cswitcher.getHash(groupName)
         self.vgName = self.groupNameHash + "VG"
         self.loadConf()
         for cmd in self.initialCmds:

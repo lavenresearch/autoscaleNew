@@ -2,6 +2,7 @@ from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 from utils.executeCmd import executeCmdSp
+from utils.codecSwitcher import codecSwitcher
 import os,glob,re,time,sys
 import socket
 import fcntl
@@ -100,7 +101,8 @@ class storageConsumer():
         remoteGroupManagerConf = remoteGroupManagersConf[groupName]
         remoteConsumerConf["remoteDiskAmount"] += 1
         extraDeviceConf["remoteLV"] = remoteConsumerConf["remoteLV"]+str(remoteConsumerConf["remoteDiskAmount"])
-        extraDeviceConf["remoteVG"] = str(abs(hash(groupName)))+"VG"
+        cswitcher = codecSwitcher()
+        extraDeviceConf["remoteVG"] = cswitcher.getHash(groupName)+"VG"
         extraDeviceConf["remoteLVPath"] = "/dev/"+extraDeviceConf["remoteVG"]+"/"+extraDeviceConf["remoteLV"]
         extraDeviceConf["remoteIQN"] = remoteConsumerConf["remoteIQN"]+str(remoteConsumerConf["remoteDiskAmount"])
         extraDeviceConf["groupName"] = groupName
@@ -116,7 +118,7 @@ class storageConsumer():
         # self.remoteCmd("setenforce 0;tgtadm --lld iscsi --op new --mode logicalunit --tid "+str(extraDeviceConf["remoteTid"])+" --lun 1 -b "+extraDeviceConf["remoteLVPath"] , groupManagerIP)
         # self.remoteCmd("tgtadm --lld iscsi --op bind --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -I "+self.hostIP , groupManagerIP)
         remoteIQN = extraDeviceConf["remoteIQN"]
-        remoteTid = str(extraDeviceConf["remoteTid"]
+        remoteTid = str(extraDeviceConf["remoteTid"])
         remoteLVPath = extraDeviceConf["remoteLVPath"]
         cmdScstCreate = "scst-create.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP 
         self.remoteCmd(cmdScstCreate,groupManagerIP)
