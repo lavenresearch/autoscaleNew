@@ -42,6 +42,16 @@ class storageProvider():
         )[20:24])
 
     def getDeviceSize(self,devicepathDev):
+        deviceType = len(devicepathDev.split("/"))
+        if deviceType == 3:
+            lvDeviceName = devicepathDev.split("/")[-1]
+            cmd = "lvs | grep "+lvDeviceName+" | awk '{print $4}'"
+            size = self.executeCmd(cmd)
+            sizeNum = size[:-1]
+            sizeM = size[-1]
+            if sizeM == "G":
+                return int(sizeNum*1024)
+            return int(sizeNum)
         devicepathSys = "/sys/block/"+devicepathDev.split("/")[-1]
         nr_sectors = open(devicepathSys+'/size').read().rstrip('\n')
         sect_size = open(devicepathSys+'/queue/hw_sector_size').read().rstrip('\n')

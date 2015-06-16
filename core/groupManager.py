@@ -220,11 +220,11 @@ class groupManager():
         
         gmConf = self.cHelper.getGroupMConf()
         currentTid = gmConf[self.groupName]["currentTid"]
-	print "&&&&&&&&&&&&&& currentTid &&&&&&&&&&&& " + str(currentTid)
+        print "&&&&&&&&&&&&&& currentTid &&&&&&&&&&&& " + str(currentTid)
         sConf = staticConfig()
         gmConf[self.groupName] = {}
         gmConf[self.groupName]["currentTid"] = (currentTid-500)/200*200+500
-	print "&&&&&&&&&&&&&& new currentTid &&&&&&&&&&& " + str(gmConf[self.groupName]["currentTid"])
+        print "&&&&&&&&&&&&&& new currentTid &&&&&&&&&&& " + str(gmConf[self.groupName]["currentTid"])
         gmConf[self.groupName]["gmIP"] = sConf.getGroupMIP()
         gmConf[self.groupName]["devicesLoaded"] = []
         gmConf[self.groupName]["consumersLoaded"] = []
@@ -233,7 +233,7 @@ class groupManager():
     def deleteGroup(self):
         self.clearGroup()
         gmConf = self.cHelper.getGroupMConf()
-	if gmConf.has_key(self.groupName):
+        if gmConf.has_key(self.groupName):
             gmConf.pop(self.groupName)
             self.cHelper.setGroupMConf(gmConf)
 
