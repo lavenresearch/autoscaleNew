@@ -42,7 +42,7 @@ class testAll():
     cgARG1 = ["high","tag1","tag2"]
     cgARG2 = ["low","tag3","tag4"]
 
-    ascARG1 = ["user1","192.168.16.124"]
+    ascARG1 = ["user1","192.168.16.122"]
     #ascARG2 = ["192.168.3.62"]
 
     adtgARG1 = ["192.168.0.98","/dev/loop0","high"]
@@ -50,10 +50,10 @@ class testAll():
     adtgARG3 = ["192.168.0.98","/dev/loop2","high"]
     adtgARG4 = ["192.168.0.98","/dev/loop3","low"]
 
-    rqesARG1 = ["192.168.16.124",150,"tag1","tag2"]
-    rqesARG2 = ["192.168.16.124",250,"tag3","tag4"]
-    rqesARG3 = ["192.168.16.124",350,"tag1","tag2"]
-    rqesARG4 = ["192.168.16.124",400,"tag5"]
+    rqesARG1 = ["192.168.16.122",150,"tag1","tag2"]
+    rqesARG2 = ["192.168.16.122",250,"tag3","tag4"]
+    rqesARG3 = ["192.168.16.122",350,"tag1","tag2"]
+    rqesARG4 = ["192.168.16.122",400,"tag5"]
     #rqesARG5 = ["192.168.16.123","low",500]
 
     # rlesARG1
