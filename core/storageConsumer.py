@@ -165,8 +165,8 @@ class storageConsumer():
     def releaseStorage(self, localDeviceMap):
         remoteConf = self.cHelper.getConsumerConf()
         consumerID = self.conf["consumerID"]
-        consumserConf = remoteConf[consumerID]
-        devicesInfo = consumserConf["extraDevicesList"]
+        consumerConf = remoteConf[consumerID]
+        devicesInfo = consumerConf["extraDevicesList"]
         deviceInfo = {}
         for d in devicesInfo:
             if localDeviceMap in d["localDeviceMap"]:
@@ -177,7 +177,7 @@ class storageConsumer():
             self.logger.shutdownLog()
             sys.exit(1)
         devicesInfo.remove(deviceInfo)
-        consumserConf["remoteDiskAmount"] -= 1
+        consumerConf["remoteDiskAmount"] -= 1
         groupMsConf = self.cHelper.getGroupMConf()
         groupMConf = groupMsConf.get(deviceInfo["groupName"])
         if groupMConf == None:
@@ -195,7 +195,7 @@ class storageConsumer():
         remoteLVPath = deviceInfo["remoteLVPath"]
         consumerIP = consumerConf["consumerLocation"]
         cmdScstRemove = "scst-remove.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+consumerIP
-        self.remoteCmd(cmdScstRemove)
+        self.remoteCmd(cmdScstRemove,gmIP)
         removeLVCmd = "lvchange -a n "+deviceInfo["remoteLVPath"]+" && lvremove "+deviceInfo["remoteLVPath"]
         self.remoteCmd(removeLVCmd, gmIP)
         self.cHelper.setConsumerConf(remoteConf)

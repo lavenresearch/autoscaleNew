@@ -73,7 +73,7 @@ class storageProvider():
         gmConf = gmsConf.get(self.conf["deviceGroup"])
         if gmConf == None:
             print "Storage group do not exist!"
-            self.writeLog("Storage group do not exist!")
+            self.logger.writeLog("Storage group do not exist!")
             self.shutdownLog()
             sys.exit(1)
         self.conf["groupManagerIP"] = gmConf.get("gmIP")
