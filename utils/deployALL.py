@@ -10,17 +10,16 @@ import sys,os
 class deployALL():
     destinationIP = ""
     path = ""
-    initialCmds = ["service iptable stop","setenforce 0","lvmconf --disable-cluster","yum install scsi-target-utils.x86_64 iscsi-initiator-utils.x86_64 reiserfs-utils --nogpgcheck -y"]
+    initialCmds = ["service iptable stop","setenforce 0"]
     currentPwd = "./"
     def __init__(self, arg):
         self.destinationIP = arg[0]
         sConf = staticConfig()
         self.path = sConf.getPath()
-        self.executeCmd("ssh-copy-id -i "+self.destinationIP)
+        self.executeCmd("ssh-copy-id -i root@"+self.destinationIP)
         self.currentPwd = os.popen("pwd").read()
         self.currentPwd = self.currentPwd.split("\n")[0]+"/"
         print self.currentPwd
-        raw_input()
 
     def executeCmd(self, cmd):
         logger = autoscaleLog(__file__)
@@ -53,6 +52,7 @@ class deployALL():
         self.executeRemoteCmd(rcmd, self.destinationIP)
         rcmd = "cd "+self.path+"packages/redis-2.10.3/ && python setup.py install"
         self.executeRemoteCmd(rcmd, self.destinationIP)
+        self.executeRemoteCmd("cp "+self.path+"core/scst* /usr/local/bin" ,self.destinationIP)
 
 
 

@@ -13,7 +13,6 @@ class storageProvider():
     cHelper = None
     hostIP = ""
     conf = {}
-    # initialCmds = ["dos2unix *","chmod +x *","service iptable stop","setenforce 0","lvmconf --disable-cluster"]
     initialCmds = []
     logger = None
     path = "/usr/local/src/suyiAutoscale/src/"
@@ -43,6 +42,28 @@ class storageProvider():
         )[20:24])
 
     def getDeviceSize(self,devicepathDev):
+        print devicepathDev
+        deviceType = len(devicepathDev.split("/"))
+        if deviceType >= 3:
+            lvDeviceName = devicepathDev.split("/")[-1]
+            cmd = "lvs | grep "+lvDeviceName+" | awk '{print $4}'"
+            size = self.executeCmd(cmd)
+            s = size.split('\n')
+            print "************************"
+            print size
+            print "************************"
+            for si in s:
+                if si[-1] == "G" or si[-1] == "M" or si[-1] == "T":
+                    size = si
+                    break
+            sizeNum = float(size[:-1])
+            sizeM = size[-1]
+            if sizeM == "T":
+                return int(sizeNum*1024*1024)
+            elif sizeM == "G":
+                return int(sizeNum*1024)
+            else:
+                return int(sizeNum)
         devicepathSys = "/sys/block/"+devicepathDev.split("/")[-1]
         nr_sectors = open(devicepathSys+'/size').read().rstrip('\n')
         sect_size = open(devicepathSys+'/queue/hw_sector_size').read().rstrip('\n')
@@ -74,14 +95,18 @@ class storageProvider():
         gmConf = gmsConf.get(self.conf["deviceGroup"])
         if gmConf == None:
             print "Storage group do not exist!"
-            self.writeLog("Storage group do not exist!")
+            self.logger.writeLog("Storage group do not exist!")
             self.shutdownLog()
             sys.exit(1)
         self.conf["groupManagerIP"] = gmConf.get("gmIP")
 
     def exportStorage(self):
         cmd = self.path+"deployStorage.sh "+self.conf["deviceIQN"]+" "+self.conf["deviceName"]+" "+self.conf["tid"]+" "+self.conf["groupManagerIP"]
-        self.executeCmd(cmd)
+        out = self.executeCmd(cmd)
+        if out.find("Error) >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
+            print "target remove failed"
+            print "706errorKEY"
+            sys.exit(1)   
         self.updateInfoCenter(self.conf,'add')
         self.logger.shutdownLog()
 
@@ -94,8 +119,16 @@ class storageProvider():
 	if deviceConfRemote == None:
 	    return False
         tid = deviceConfRemote.get("tid")
-        cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+tid
-        self.executeCmd(cmdStopProvider)
+        # cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+tid
+        deviceIQN = deviceConfRemote.get("deviceIQN")
+        deviceName = deviceConfRemote.get("deviceName")
+        groupManagerIP = deviceConfRemote.get("groupManagerIP")
+        cmdStopProvider = "scst-remove.sh "+deviceIQN+" "+tid+" "+tid+" 0 "+deviceName+" "+groupManagerIP
+        out = self.executeCmd(cmdStopProvider)
+        if out.find("Error) >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
+            print "target remove failed"
+            print "706errorKEY"
+            sys.exit(1)
 	atid = self.cHelper.getAvailTid()
         tid = atid.get(self.hostIP)
         if tid != None:

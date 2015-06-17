@@ -3,6 +3,7 @@ from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 from interfaces import releaseExtraStorage
 from utils.executeCmd import executeCmdSp
+from utils.codecSwitcher import codecSwitcher
 import os,glob,re,time,sys
 import socket
 import fcntl
@@ -73,7 +74,8 @@ class groupManager():
         self.path = sConf.getPath()
         self.hostIP = self.getLocalIP(iframe)
         self.groupName = groupName
-        self.groupNameHash = str(abs(hash(groupName)))
+        cswitcher = codecSwitcher()
+        self.groupNameHash = cswitcher.getHash(groupName)
         self.vgName = self.groupNameHash + "VG"
         self.loadConf()
         for cmd in self.initialCmds:
@@ -144,6 +146,7 @@ class groupManager():
         self.logger.writeLog("newDevices"+str(newDevices))
         if newDevices == []:
             print "Storage Load Failed"
+            print "706errorKEY"
             self.logger.writeLog("Storage Load Failed")
             self.logger.shutdownLog()
             sys.exit(1)
@@ -196,6 +199,7 @@ class groupManager():
         remoteGroupManagerConf = remoteGroupManagersConf.get(self.groupName)
         if remoteGroupManagerConf == None:
             print "group do not exist!"
+            print "706errorKEY"
             return False
         groupConsumerLoaded = remoteGroupManagerConf.get("consumersLoaded")
         for consumer in groupConsumerLoaded:
@@ -213,17 +217,16 @@ class groupManager():
             device.iscsiLogout()
             cmdStopProvider = "ssh -t root@"+device.deviceLocation+" \"python "+self.path+"main.py stopProvider "+device.deviceName+" "+self.groupName+"\""
             self.executeCmd(cmdStopProvider)
-            # device.stopProvider()
 
         # update information center
         
         gmConf = self.cHelper.getGroupMConf()
         currentTid = gmConf[self.groupName]["currentTid"]
-	print "&&&&&&&&&&&&&& currentTid &&&&&&&&&&&& " + str(currentTid)
+        print "&&&&&&&&&&&&&& currentTid &&&&&&&&&&&& " + str(currentTid)
         sConf = staticConfig()
         gmConf[self.groupName] = {}
         gmConf[self.groupName]["currentTid"] = (currentTid-500)/200*200+500
-	print "&&&&&&&&&&&&&& new currentTid &&&&&&&&&&& " + str(gmConf[self.groupName]["currentTid"])
+        print "&&&&&&&&&&&&&& new currentTid &&&&&&&&&&& " + str(gmConf[self.groupName]["currentTid"])
         gmConf[self.groupName]["gmIP"] = sConf.getGroupMIP()
         gmConf[self.groupName]["devicesLoaded"] = []
         gmConf[self.groupName]["consumersLoaded"] = []
@@ -232,7 +235,7 @@ class groupManager():
     def deleteGroup(self):
         self.clearGroup()
         gmConf = self.cHelper.getGroupMConf()
-	if gmConf.has_key(self.groupName):
+        if gmConf.has_key(self.groupName):
             gmConf.pop(self.groupName)
             self.cHelper.setGroupMConf(gmConf)
 

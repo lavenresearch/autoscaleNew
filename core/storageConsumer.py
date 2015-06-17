@@ -2,6 +2,7 @@ from utils.configHelper import configHelper
 from utils.staticConfig import staticConfig
 from utils.autoScaleLog import autoscaleLog
 from utils.executeCmd import executeCmdSp
+from utils.codecSwitcher import codecSwitcher
 import os,glob,re,time,sys
 import socket
 import fcntl
@@ -100,7 +101,8 @@ class storageConsumer():
         remoteGroupManagerConf = remoteGroupManagersConf[groupName]
         remoteConsumerConf["remoteDiskAmount"] += 1
         extraDeviceConf["remoteLV"] = remoteConsumerConf["remoteLV"]+str(remoteConsumerConf["remoteDiskAmount"])
-        extraDeviceConf["remoteVG"] = str(abs(hash(groupName)))+"VG"
+        cswitcher = codecSwitcher()
+        extraDeviceConf["remoteVG"] = cswitcher.getHash(groupName)+"VG"
         extraDeviceConf["remoteLVPath"] = "/dev/"+extraDeviceConf["remoteVG"]+"/"+extraDeviceConf["remoteLV"]
         extraDeviceConf["remoteIQN"] = remoteConsumerConf["remoteIQN"]+str(remoteConsumerConf["remoteDiskAmount"])
         extraDeviceConf["groupName"] = groupName
@@ -112,12 +114,14 @@ class storageConsumer():
         # createRemoteStorage
 
         self.remoteCmd("lvcreate -L "+str(extraDeviceConf["remoteSize"])+"M -n "+extraDeviceConf["remoteLV"]+" "+extraDeviceConf["remoteVG"], groupManagerIP)
-        status = self.remoteCmd("service tgtd status" , groupManagerIP)
-        if status.find("tgtd is stopped") != -1:
-            self.remoteCmd("service tgtd start" , groupManagerIP)
-        self.remoteCmd("tgtadm --lld iscsi --op new --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -T "+extraDeviceConf["remoteIQN"] , groupManagerIP)
-        self.remoteCmd("setenforce 0;tgtadm --lld iscsi --op new --mode logicalunit --tid "+str(extraDeviceConf["remoteTid"])+" --lun 1 -b "+extraDeviceConf["remoteLVPath"] , groupManagerIP)
-        self.remoteCmd("tgtadm --lld iscsi --op bind --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -I "+self.hostIP , groupManagerIP)
+        # self.remoteCmd("tgtadm --lld iscsi --op new --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -T "+extraDeviceConf["remoteIQN"] , groupManagerIP)
+        # self.remoteCmd("setenforce 0;tgtadm --lld iscsi --op new --mode logicalunit --tid "+str(extraDeviceConf["remoteTid"])+" --lun 1 -b "+extraDeviceConf["remoteLVPath"] , groupManagerIP)
+        # self.remoteCmd("tgtadm --lld iscsi --op bind --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -I "+self.hostIP , groupManagerIP)
+        remoteIQN = extraDeviceConf["remoteIQN"]
+        remoteTid = str(extraDeviceConf["remoteTid"])
+        remoteLVPath = extraDeviceConf["remoteLVPath"]
+        cmdScstCreate = "scst-create.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP 
+        self.remoteCmd(cmdScstCreate,groupManagerIP)
 
         # loadRemoteStorage
 
@@ -137,6 +141,7 @@ class storageConsumer():
         self.logger.writeLog("newDevice"+str(newDevices))
         if newDevices == []:
             print "Storage Load Failed"
+            print "706errorKEY"
             self.logger.writeLog("Storage Load Failed")
             sys.exit()
         extraDeviceConf["localDeviceMap"] = newDevices
@@ -161,23 +166,25 @@ class storageConsumer():
     def releaseStorage(self, localDeviceMap):
         remoteConf = self.cHelper.getConsumerConf()
         consumerID = self.conf["consumerID"]
-        consumserConf = remoteConf[consumerID]
-        devicesInfo = consumserConf["extraDevicesList"]
+        consumerConf = remoteConf[consumerID]
+        devicesInfo = consumerConf["extraDevicesList"]
         deviceInfo = {}
         for d in devicesInfo:
             if localDeviceMap in d["localDeviceMap"]:
                 deviceInfo = d
         if deviceInfo == {}:
             print "Device to be released do note exist!"
+            print "706errorKEY"
             self.logger.writeLog("Device to be released do note exist!")
             self.logger.shutdownLog()
             sys.exit(1)
         devicesInfo.remove(deviceInfo)
-        consumserConf["remoteDiskAmount"] -= 1
+        consumerConf["remoteDiskAmount"] -= 1
         groupMsConf = self.cHelper.getGroupMConf()
         groupMConf = groupMsConf.get(deviceInfo["groupName"])
         if groupMConf == None:
             print "group conf information do not exist"
+            print "706errorKEY"
             self.logger.writeLog("group conf information do note exist!")
             self.logger.shutdownLog()
             sys.exit(1)
@@ -186,7 +193,12 @@ class storageConsumer():
         unloadDeviceCmd = "iscsiadm -m node -T "+deviceInfo["remoteIQN"]+" -p "+gmIP+" -u"
         self.executeCmd( unloadDeviceCmd)
         remoteTid = str(deviceInfo["remoteTid"])
-        self.remoteCmd("tgtadm --lld iscsi --op delete --mode target --tid "+remoteTid , gmIP)
+        # self.remoteCmd("tgtadm --lld iscsi --op delete --mode target --tid "+remoteTid , gmIP)
+        remoteIQN = deviceInfo["remoteIQN"]
+        remoteLVPath = deviceInfo["remoteLVPath"]
+        consumerIP = consumerConf["consumerLocation"]
+        cmdScstRemove = "scst-remove.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+consumerIP
+        self.remoteCmd(cmdScstRemove,gmIP)
         removeLVCmd = "lvchange -a n "+deviceInfo["remoteLVPath"]+" && lvremove "+deviceInfo["remoteLVPath"]
         self.remoteCmd(removeLVCmd, gmIP)
         self.cHelper.setConsumerConf(remoteConf)
@@ -195,6 +207,7 @@ class storageConsumer():
         groupConsumerLoaded = groupMConf.get("consumersLoaded")
         if groupConsumerLoaded == None:
             print "groupConsumerLoaded key do not exist"
+            print "706errorKEY"
             sys.exit(1)
         consuemrInfo = {"consumerLocation":self.hostIP,"localDeviceMap":localDeviceMap}
         groupConsumerLoaded.remove(consuemrInfo)

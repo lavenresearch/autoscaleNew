@@ -31,11 +31,15 @@ def run(arg):
         userC = []
     if consumerLocation in userC:
         print "consumer already exist!"
+        print "failed1failed2failed"
         return False
     userC.append(consumerLocation)
     userConsumers[userName] = userC
     cHelper.setUserConsumers(userConsumers)
-    executeCmd(cmd)
+    out = executeCmd(cmd)
+    if out.find("706errorKEY") >= 0:
+        print "failed1failed2failed"
+        return False
 
 if __name__ == '__main__':
     consumerLocation = sys.argv[1]

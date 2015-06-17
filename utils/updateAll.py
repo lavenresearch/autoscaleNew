@@ -41,7 +41,7 @@ class updateAll():
 
 
 def run():
-    iplist = ["192.168.16.123","192.168.16.124"]
+    iplist = ["192.168.0.99","192.168.0.98","192.168.16.122"]
     for ip in iplist:
         ua = updateAll(ip)
         ua.run()

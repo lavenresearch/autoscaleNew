@@ -50,6 +50,7 @@ def run(arg):
     groupList = gchooser.chooseGroup(tagList)
     if groupList == []:
         print "No storage resource available"
+        print "failed1failed2failed"
         return False
     groupName = groupList[0]
     # currentTime = time.time()
@@ -68,22 +69,26 @@ def run(arg):
     # print userBookingForUser
     if userBookingForUser == None:
         print "User did not book any storage"
+        print "failed1failed2failed"
         return False
     userBookingForUserForGroup = userBookingForUser.get(groupName)
     # print "userBookingForUserForGroup"
     # print userBookingForUserForGroup
     if userBookingForUserForGroup == None:
         print "User did not book storage for "+str(tagList)
+        print "failed1failed2failed"
         return False
     bookedStorageSize = userBookingForUserForGroup.get(ctKey)
     # print "bookedStorageSize"
     # print bookedStorageSize
     if bookedStorageSize == None:
         print "User did not book storage for this period"
+        print "failed1failed2failed"
         return False
     bookedStorageSize = int(bookedStorageSize)
     if bookedStorageSize < stepSize:
         print "User do not have enough booked storage space"
+        print "failed1failed2failed"
         return False
 
     # check current available space, if not enough , release
@@ -111,7 +116,10 @@ def run(arg):
 
     requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" booked\""
     print requestStorageCmd
-    executeCmd(requestStorageCmd)
+    out = executedCmd(requestStorageCmd)
+    if out.find("706errorKEY") >= 0:
+        print "failed1failed2failed"
+        sys.exit(1)
 
     # userBookingForUserForGroup[ctKey] = bookedStorageSize - stepSize
     startKeyInt = int(ctKey)

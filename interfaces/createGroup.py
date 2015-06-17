@@ -31,6 +31,7 @@ def run(arg):
         providersConf[groupName] = {}
     else:
         print "group exist"
+        print "failed1failed2failed"
         sys.exit(1)
     logger.writeLog(providersConf)
     print json.dumps(providersConf)
@@ -44,6 +45,7 @@ def run(arg):
         gmConf[groupName]["consumersLoaded"] = []
     else:
         print "group exist"
+        print "failed1failed2failed"
         sys.exit(1)
     logger.writeLog(gmConf)
     print json.dumps(gmConf)
@@ -52,6 +54,7 @@ def run(arg):
     	tagsManager[groupName] = tagList
     else:
         print "group exist"
+        print "failed1failed2failed"
         sys.exit(1)
     cHelper.setProviderConf(providersConf)
     cHelper.setGroupMConf(gmConf)

@@ -1,0 +1,18 @@
+针对initiator端发现target时出现如下情况：
+  +----------------------------------------------------+
+  | iscsiadm: Login I/O error, failed to recieve a PDU |
+  +----------------------------------------------------+
+
+1)在target端清空/etc/scst.conf中的配置信息：
+   \cp -f /root/myscstDoc/scst.conf.org /etc/scst.conf
+2)停止scst服务并且重新加载scst模块：
+   service scst stop
+   rmmod qla2x00tgt
+   rmmod iscsi_scst
+   rmmod scst_vdisk
+   modprobe scst_vdisk
+   modprobe iscsi_scst
+   modprobe qla2x00tgt
+   service scst start
+3)若上述两步还未成功discovery，则重启target端的机器，重启之后即可
+

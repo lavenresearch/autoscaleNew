@@ -36,18 +36,11 @@ else
     echo "Too much parameters!"
 fi
 
-# install iscsi target
+scst-create.sh $deviceiqn $tid $tid 0 $devicepath $gmip
+echo scst-remove.sh $deviceiqn $tid $tid 0 $devicepath $gmip > $tid.sh
 
-yum install scsi-target-utils.x86_64 --nogpgcheck -y
-
-# start iscsi target
-status=$(service tgtd status)
-if [[ $status = "tgtd is stopped" ]]; then
-    /etc/init.d/tgtd start
-fi
-
-tgtadm --lld iscsi --op new --mode target --tid $tid -T $deviceiqn
-setenforce 0 # have to gurantee SELinux off in order to use file instead block device.
-tgtadm --lld iscsi --op new --mode logicalunit --tid $tid --lun 1 -b $devicepath
+# tgtadm --lld iscsi --op new --mode target --tid $tid -T $deviceiqn
+# setenforce 0 # have to gurantee SELinux off in order to use file instead block device.
+# tgtadm --lld iscsi --op new --mode logicalunit --tid $tid --lun 1 -b $devicepath
 # tgtadm --lld iscsi --op bind --mode target --tid $tid -I ALL
-tgtadm --lld iscsi --op bind --mode target --tid $tid -I $gmip
+# tgtadm --lld iscsi --op bind --mode target --tid $tid -I $gmip

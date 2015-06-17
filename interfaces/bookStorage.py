@@ -52,11 +52,13 @@ def run(arg):
     groupList = gchooser.chooseGroup(tagList)
     if groupList == []:
         print "No storage resource available"
+        print "failed1failed2failed"
         return False
     groupName = groupList[0]
     res = gchooser.applyTimeslot(groupName,startTime,endTime,stepSize)
     if res == False:
         print "booking failed"
+        print "failed1failed2failed"
         return False
 
     # update user booking table
