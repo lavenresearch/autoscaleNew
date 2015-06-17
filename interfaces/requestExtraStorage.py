@@ -49,10 +49,14 @@ def run(arg):
     groupList = gchooser.chooseGroup(tagList)
     if groupList == []:
         print "No storage resource available"
+        print "failed1failed2failed"
         return False
     groupName = groupList[0]
     requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" extra\""
-    output = executeCmd(requestStorageCmd)
+    out = executeCmd(requestStorageCmd)
+    if out.find("706errorKEY") >= 0:
+        print "failed1failed2failed"
+        sys.exit(1)
     # deviceMap = output.split("\n")[-1]
 
 if __name__ == '__main__':

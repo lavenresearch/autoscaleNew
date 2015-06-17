@@ -42,16 +42,28 @@ class storageProvider():
         )[20:24])
 
     def getDeviceSize(self,devicepathDev):
+        print devicepathDev
         deviceType = len(devicepathDev.split("/"))
-        if deviceType == 3:
+        if deviceType >= 3:
             lvDeviceName = devicepathDev.split("/")[-1]
             cmd = "lvs | grep "+lvDeviceName+" | awk '{print $4}'"
             size = self.executeCmd(cmd)
-            sizeNum = size[:-1]
+            s = size.split('\n')
+            print "************************"
+            print size
+            print "************************"
+            for si in s:
+                if si[-1] == "G" or si[-1] == "M" or si[-1] == "T":
+                    size = si
+                    break
+            sizeNum = float(size[:-1])
             sizeM = size[-1]
-            if sizeM == "G":
+            if sizeM == "T":
+                return int(sizeNum*1024*1024)
+            elif sizeM == "G":
                 return int(sizeNum*1024)
-            return int(sizeNum)
+            else:
+                return int(sizeNum)
         devicepathSys = "/sys/block/"+devicepathDev.split("/")[-1]
         nr_sectors = open(devicepathSys+'/size').read().rstrip('\n')
         sect_size = open(devicepathSys+'/queue/hw_sector_size').read().rstrip('\n')
@@ -90,7 +102,11 @@ class storageProvider():
 
     def exportStorage(self):
         cmd = self.path+"deployStorage.sh "+self.conf["deviceIQN"]+" "+self.conf["deviceName"]+" "+self.conf["tid"]+" "+self.conf["groupManagerIP"]
-        self.executeCmd(cmd)
+        out = self.executeCmd(cmd)
+        if out.find("Error) >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
+            print "target remove failed"
+            print "706errorKEY"
+            sys.exit(1)   
         self.updateInfoCenter(self.conf,'add')
         self.logger.shutdownLog()
 
@@ -108,7 +124,11 @@ class storageProvider():
         deviceName = deviceConfRemote.get("deviceName")
         groupManagerIP = deviceConfRemote.get("groupManagerIP")
         cmdStopProvider = "scst-remove.sh "+deviceIQN+" "+tid+" "+tid+" 0 "+deviceName+" "+groupManagerIP
-        self.executeCmd(cmdStopProvider)
+        out = self.executeCmd(cmdStopProvider)
+        if out.find("Error) >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
+            print "target remove failed"
+            print "706errorKEY"
+            sys.exit(1)
 	atid = self.cHelper.getAvailTid()
         tid = atid.get(self.hostIP)
         if tid != None:

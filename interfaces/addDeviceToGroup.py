@@ -28,14 +28,21 @@ def run(arg):
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper(infoCLocation["ipInfoC"],infoCLocation["portInfoC"])
     startProviderCmd = "ssh -t root@"+deviceLocation+" \"python "+path+"main.py startProvider "+deviceName+" "+groupName+"\""
-    executeCmd(startProviderCmd)
+    out = executeCmd(startProviderCmd)
+    if out.find("706errorKEY") >= 0:
+        print "failed1failed2failed"
+        sys.exit(1)
     gmConf = cHelper.getGroupMConf().get(groupName)
     if gmConf == None:
         print "Group do not exist"
+        print "failed1failed2failed"
         sys.exit(1)
     gmIP = gmConf.get("gmIP")
     extendGroupCmd = "ssh -t root@"+gmIP+" \"python "+path+"main.py extendGroup "+groupName+"\""
-    executeCmd(extendGroupCmd)
+    out = executeCmd(extendGroupCmd)
+    if out.find("706errorKEY") >= 0:
+        print "failed1failed2failed"
+        sys.exit(1)
 
 if __name__ == '__main__':
     deviceLocation = sys.argv[1]

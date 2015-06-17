@@ -30,13 +30,17 @@ def run(arg):
     gmConf = gmsConf.get(groupName)
     if gmConf == None:
         print "group do not exist"
+        print "failed1failed2failed"
         return False
     gmIP = gmConf.get("gmIP")
     print gmIP
     print path
     print groupName
     deleteGroupCmd = u"ssh -t root@"+gmIP+u" \"python "+path+u"main.py deleteGroup "+groupName+u"\""
-    executeCmd(deleteGroupCmd)
+    out = executeCmd(deleteGroupCmd)
+    if out.find("706errorKEY") >= 0:
+        print "failed1failed2failed"
+        sys.exit(1)
 
 if __name__ == '__main__':
     groupName = sys.argv[1]

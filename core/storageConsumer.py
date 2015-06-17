@@ -141,6 +141,7 @@ class storageConsumer():
         self.logger.writeLog("newDevice"+str(newDevices))
         if newDevices == []:
             print "Storage Load Failed"
+            print "706errorKEY"
             self.logger.writeLog("Storage Load Failed")
             sys.exit()
         extraDeviceConf["localDeviceMap"] = newDevices
@@ -173,6 +174,7 @@ class storageConsumer():
                 deviceInfo = d
         if deviceInfo == {}:
             print "Device to be released do note exist!"
+            print "706errorKEY"
             self.logger.writeLog("Device to be released do note exist!")
             self.logger.shutdownLog()
             sys.exit(1)
@@ -182,6 +184,7 @@ class storageConsumer():
         groupMConf = groupMsConf.get(deviceInfo["groupName"])
         if groupMConf == None:
             print "group conf information do not exist"
+            print "706errorKEY"
             self.logger.writeLog("group conf information do note exist!")
             self.logger.shutdownLog()
             sys.exit(1)
@@ -204,6 +207,7 @@ class storageConsumer():
         groupConsumerLoaded = groupMConf.get("consumersLoaded")
         if groupConsumerLoaded == None:
             print "groupConsumerLoaded key do not exist"
+            print "706errorKEY"
             sys.exit(1)
         consuemrInfo = {"consumerLocation":self.hostIP,"localDeviceMap":localDeviceMap}
         groupConsumerLoaded.remove(consuemrInfo)

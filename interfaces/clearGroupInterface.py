@@ -29,10 +29,14 @@ def run(arg):
     gmConf = gmsConf.get(groupName)
     if gmConf == None:
         print "group do not exist"
+        print "failed1failed2failed"
         return False
     gmIP = gmConf.get("gmIP")
     clearGroupCmd = "ssh -t root@"+gmIP+" \"python "+path+"main.py clearGroup "+groupName+"\""
-    executeCmd(clearGroupCmd)
+    out = executeCmd(clearGroupCmd)
+    if out.find("706errorKEY") >= 0:
+        print "failed1failed2failed"
+        sys.exit(1)
 
 if __name__ == '__main__':
     groupName = sys.argv[1]

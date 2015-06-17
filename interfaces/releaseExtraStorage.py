@@ -23,7 +23,10 @@ def run(arg):
     sConf = staticConfig()
     path = sConf.getPath()
     releaseStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py releaseStorage "+localDeviceMap+"\""
-    executeCmd(releaseStorageCmd)
+    out = executeCmd(releaseStorageCmd)
+    if out.find("706errorKEY") >= 0:
+        print "failed1failed2failed"
+        sys.exit(1)
 
 if __name__ == '__main__':
     consumerLocation = sys.argv[1]

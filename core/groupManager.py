@@ -146,6 +146,7 @@ class groupManager():
         self.logger.writeLog("newDevices"+str(newDevices))
         if newDevices == []:
             print "Storage Load Failed"
+            print "706errorKEY"
             self.logger.writeLog("Storage Load Failed")
             self.logger.shutdownLog()
             sys.exit(1)
@@ -198,6 +199,7 @@ class groupManager():
         remoteGroupManagerConf = remoteGroupManagersConf.get(self.groupName)
         if remoteGroupManagerConf == None:
             print "group do not exist!"
+            print "706errorKEY"
             return False
         groupConsumerLoaded = remoteGroupManagerConf.get("consumersLoaded")
         for consumer in groupConsumerLoaded:

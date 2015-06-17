@@ -45,10 +45,10 @@ class testAll():
     ascARG1 = ["user1","192.168.16.122"]
     #ascARG2 = ["192.168.3.62"]
 
-    adtgARG1 = ["192.168.0.98","/dev/loop0","high"]
-    adtgARG2 = ["192.168.0.98","/dev/loop1","low"]
-    adtgARG3 = ["192.168.0.98","/dev/loop2","high"]
-    adtgARG4 = ["192.168.0.98","/dev/loop3","low"]
+    adtgARG1 = ["192.168.0.98","/dev/raid0/lv0","high"]
+    adtgARG2 = ["192.168.0.98","/dev/raid0/lv1","low"]
+    adtgARG3 = ["192.168.0.98","/dev/raid0/lv2","high"]
+    adtgARG4 = ["192.168.0.98","/dev/raid1/lv3","low"]
 
     rqesARG1 = ["192.168.16.122",150,"tag1","tag2"]
     rqesARG2 = ["192.168.16.122",250,"tag3","tag4"]
