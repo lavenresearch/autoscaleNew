@@ -122,6 +122,8 @@ class storageConsumer():
         remoteLVPath = extraDeviceConf["remoteLVPath"]
         cmdScstCreate = "scst-create.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP 
         self.remoteCmd(cmdScstCreate,groupManagerIP)
+        cmdScstRemove = "scst-remove.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP
+        self.remoteCmd("echo "+cmdScstRemove+" >/root/"+remoteTid+".sh", groupManagerIP)
 
         # loadRemoteStorage
 
@@ -157,7 +159,7 @@ class storageConsumer():
                 if releaseCandidates == None:
                     releaseCandidates = {}
                 releaseCandidates[releaseCandidateKey] = int(stepSize)
-        self.cHelper.setReleaseCandidates(releaseCandidates)
+                self.cHelper.setReleaseCandidates(releaseCandidates)
         self.cHelper.setGroupMConf(remoteGroupManagersConf)
         remoteConsumerConf["extraDevicesList"].append(extraDeviceConf)
         self.cHelper.setConsumerConf(remoteConsumersConf)

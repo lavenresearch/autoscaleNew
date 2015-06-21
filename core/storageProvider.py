@@ -95,6 +95,7 @@ class storageProvider():
         gmConf = gmsConf.get(self.conf["deviceGroup"])
         if gmConf == None:
             print "Storage group do not exist!"
+            print "706errorKEY"
             self.logger.writeLog("Storage group do not exist!")
             self.shutdownLog()
             sys.exit(1)
@@ -103,8 +104,8 @@ class storageProvider():
     def exportStorage(self):
         cmd = self.path+"deployStorage.sh "+self.conf["deviceIQN"]+" "+self.conf["deviceName"]+" "+self.conf["tid"]+" "+self.conf["groupManagerIP"]
         out = self.executeCmd(cmd)
-        if out.find("Error) >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
-            print "target remove failed"
+        if out.find("Error") >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
+            print "target building failed"
             print "706errorKEY"
             sys.exit(1)   
         self.updateInfoCenter(self.conf,'add')
@@ -125,7 +126,7 @@ class storageProvider():
         groupManagerIP = deviceConfRemote.get("groupManagerIP")
         cmdStopProvider = "scst-remove.sh "+deviceIQN+" "+tid+" "+tid+" 0 "+deviceName+" "+groupManagerIP
         out = self.executeCmd(cmdStopProvider)
-        if out.find("Error) >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
+        if out.find("Error") >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
             print "target remove failed"
             print "706errorKEY"
             sys.exit(1)

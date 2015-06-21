@@ -42,6 +42,7 @@ def run(arg):
     path = sConf.getPath()
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
+    print arg
     userName = arg[0]
     consumerLocation = arg[1]
     stepSize = int(arg[2])
@@ -94,7 +95,9 @@ def run(arg):
     # check current available space, if not enough , release
 
     currentUsageInfo = getUsageInfo.run([])
-    asize = currentUsageInfo.get(groupName).get('groupSize')
+    groupSize = currentUsageInfo.get(groupName).get('groupSize')
+    usedSize = currentUsageInfo.get(groupName).get('usedSize')
+    asize = groupSize - usedSize
     neededSize = 0
     if stepSize > asize:
         neededSize = stepSize - asize
@@ -116,7 +119,7 @@ def run(arg):
 
     requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" booked\""
     print requestStorageCmd
-    out = executedCmd(requestStorageCmd)
+    out = executeCmd(requestStorageCmd)
     if out.find("706errorKEY") >= 0:
         print "failed1failed2failed"
         sys.exit(1)
