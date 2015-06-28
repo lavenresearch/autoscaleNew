@@ -1,3 +1,5 @@
+This version is for kylin OS
+
 调用方式：
 
 ```python
