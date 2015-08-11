@@ -17,6 +17,7 @@ class storageConsumer():
     logger = None
     # initialCmds = ["dos2unix *","chmod +x *","service iptable stop","setenforce 0","lvmconf --disable-cluster"]
     initialCmds = []
+    iscsiTargetType = ""
     def __init__(self):
         self.logger = autoscaleLog(__file__)
         sConf = staticConfig()
@@ -27,6 +28,7 @@ class storageConsumer():
         iframe = sConf.getHostInterface(hostName)
         self.hostIP = self.getLocalIP(iframe)
         self.loadConf()
+        self.iscsiTargetType = sConf.getTargetType("groupManager")
         for cmd in self.initialCmds:
             self.executeCmd(cmd)
 
@@ -114,16 +116,22 @@ class storageConsumer():
         # createRemoteStorage
 
         self.remoteCmd("lvcreate -L "+str(extraDeviceConf["remoteSize"])+"M -n "+extraDeviceConf["remoteLV"]+" "+extraDeviceConf["remoteVG"], groupManagerIP)
-        # self.remoteCmd("tgtadm --lld iscsi --op new --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -T "+extraDeviceConf["remoteIQN"] , groupManagerIP)
-        # self.remoteCmd("setenforce 0;tgtadm --lld iscsi --op new --mode logicalunit --tid "+str(extraDeviceConf["remoteTid"])+" --lun 1 -b "+extraDeviceConf["remoteLVPath"] , groupManagerIP)
-        # self.remoteCmd("tgtadm --lld iscsi --op bind --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -I "+self.hostIP , groupManagerIP)
-        remoteIQN = extraDeviceConf["remoteIQN"]
-        remoteTid = str(extraDeviceConf["remoteTid"])
-        remoteLVPath = extraDeviceConf["remoteLVPath"]
-        cmdScstCreate = "scst-create.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP 
-        self.remoteCmd(cmdScstCreate,groupManagerIP)
-        cmdScstRemove = "scst-remove.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP
-        self.remoteCmd("echo "+cmdScstRemove+" >/root/"+remoteTid+".sh", groupManagerIP)
+        if self.iscsiTargetType == "tgt":
+            self.remoteCmd("tgtadm --lld iscsi --op new --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -T "+extraDeviceConf["remoteIQN"] , groupManagerIP)
+            self.remoteCmd("setenforce 0;tgtadm --lld iscsi --op new --mode logicalunit --tid "+str(extraDeviceConf["remoteTid"])+" --lun 1 -b "+extraDeviceConf["remoteLVPath"] , groupManagerIP)
+            self.remoteCmd("tgtadm --lld iscsi --op bind --mode target --tid "+str(extraDeviceConf["remoteTid"])+" -I "+self.hostIP , groupManagerIP)
+        elif self.iscsiTargetType == "scst":
+            remoteIQN = extraDeviceConf["remoteIQN"]
+            remoteTid = str(extraDeviceConf["remoteTid"])
+            remoteLVPath = extraDeviceConf["remoteLVPath"]
+            cmdScstCreate = "scst-create.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP 
+            self.remoteCmd(cmdScstCreate,groupManagerIP)
+            cmdScstRemove = "scst-remove.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+self.hostIP
+            self.remoteCmd("echo "+cmdScstRemove+" >/root/"+remoteTid+".sh", groupManagerIP)
+        else:
+            print "iscsi Target Type do not match"
+            print "706errorKEY"
+            sys.exit()
 
         # loadRemoteStorage
 
@@ -195,12 +203,18 @@ class storageConsumer():
         unloadDeviceCmd = "iscsiadm -m node -T "+deviceInfo["remoteIQN"]+" -p "+gmIP+" -u"
         self.executeCmd( unloadDeviceCmd)
         remoteTid = str(deviceInfo["remoteTid"])
-        # self.remoteCmd("tgtadm --lld iscsi --op delete --mode target --tid "+remoteTid , gmIP)
-        remoteIQN = deviceInfo["remoteIQN"]
-        remoteLVPath = deviceInfo["remoteLVPath"]
-        consumerIP = consumerConf["consumerLocation"]
-        cmdScstRemove = "scst-remove.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+consumerIP
-        self.remoteCmd(cmdScstRemove,gmIP)
+        if self.iscsiTargetType == "tgt":
+            self.remoteCmd("tgtadm --lld iscsi --op delete --mode target --tid "+remoteTid , gmIP)
+        elif self.iscsiTargetType == "scst":
+            remoteIQN = deviceInfo["remoteIQN"]
+            remoteLVPath = deviceInfo["remoteLVPath"]
+            consumerIP = consumerConf["consumerLocation"]
+            cmdScstRemove = "scst-remove.sh "+remoteIQN+" "+remoteTid+" "+remoteTid+" 0 "+remoteLVPath+" "+consumerIP
+            self.remoteCmd(cmdScstRemove,gmIP)
+        else:
+            print "iscsi Target Type do not match"
+            print "706errorKEY"
+            sys.exit()
         removeLVCmd = "lvchange -a n "+deviceInfo["remoteLVPath"]+" && lvremove "+deviceInfo["remoteLVPath"]
         self.remoteCmd(removeLVCmd, gmIP)
         self.cHelper.setConsumerConf(remoteConf)

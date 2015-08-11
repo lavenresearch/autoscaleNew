@@ -14,6 +14,8 @@ class staticConfig():
                                                "ds04":"eth0",
                                                "0-98":"bond0",
                                                "0-99":"bond0"}
+        self.staticConf["iscsiTargetType"] = {"groupManager":"scst",
+                                              "storageProvider":"scst"} # another option is "tgt"
         self.logger = autoscaleLog(__file__)
         self.logger.writeLog(self.staticConf)
         self.logger.shutdownLog()
@@ -31,3 +33,11 @@ class staticConfig():
         hostnameShort = hostname.split("\n")[0].split(".")[0]
         hostInterfaceMap = self.staticConf["hostInterfaceMap"]
         return hostInterfaceMap[hostnameShort]
+    def getTargetType(self,role):
+        iscsiTargetTypes = self.staticConf.get("iscsiTargetType")
+        if role == "groupManager":
+            return iscsiTargetTypes.get("groupManager")
+        elif role == "storageProvider":
+            return iscsiTargetTypes.get("storageProvider")
+        else:
+            return None

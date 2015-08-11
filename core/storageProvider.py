@@ -14,11 +14,13 @@ class storageProvider():
     hostIP = ""
     conf = {}
     initialCmds = []
+    iscsiTargetType = ""
     logger = None
     path = "/usr/local/src/suyiAutoscale/src/"
     def __init__(self,deviceName,groupName):
         sConf = staticConfig()
         self.ipInfoC = sConf.getInfoCLocation()["ipInfoC"]
+        self.iscsiTargetType = sConf.getTargetType("storageProvider")
         self.portInfoC = sConf.getInfoCLocation()["portInfoC"]
         self.cHelper = configHelper(self.ipInfoC,self.portInfoC)
         hostName = self.executeCmd("hostname")
@@ -120,11 +122,17 @@ class storageProvider():
 	if deviceConfRemote == None:
 	    return False
         tid = deviceConfRemote.get("tid")
-        # cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+tid
-        deviceIQN = deviceConfRemote.get("deviceIQN")
-        deviceName = deviceConfRemote.get("deviceName")
-        groupManagerIP = deviceConfRemote.get("groupManagerIP")
-        cmdStopProvider = "scst-remove.sh "+deviceIQN+" "+tid+" "+tid+" 0 "+deviceName+" "+groupManagerIP
+        if self.iscsiTargetType == "tgt":
+            cmdStopProvider = "tgtadm --lld iscsi --op delete --mode target --tid "+tid
+        elif self.iscsiTargetType == "scst":
+            deviceIQN = deviceConfRemote.get("deviceIQN")
+            deviceName = deviceConfRemote.get("deviceName")
+            groupManagerIP = deviceConfRemote.get("groupManagerIP")
+            cmdStopProvider = "scst-remove.sh "+deviceIQN+" "+tid+" "+tid+" 0 "+deviceName+" "+groupManagerIP
+        else:
+            print "iscsi Target Type do not match"
+            print "706errorKEY"
+            sys.exit()
         out = self.executeCmd(cmdStopProvider)
         if out.find("Error") >= 0 or out.find("FATAL") >=0 or out.find("error") >= 0:
             print "target remove failed"
