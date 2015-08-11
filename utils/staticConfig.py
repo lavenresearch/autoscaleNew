@@ -5,9 +5,10 @@ class staticConfig():
     staticConf = {}
     logger = None
     def __init__(self):
+        self.staticConf["allNodes"] = ["192.168.0.98","192.168.0.99","192.168.16.122","192.168.16.123"]
         self.staticConf["infoCLocation"] = {"ipInfoC":"192.168.16.123", "portInfoC":6379}
         self.staticConf["path"] = "/opt/suyi/autoscale706kylin/"
-        self.staticConf["gmCandidates"] = ["192.168.0.99"]
+        self.staticConf["gmCandidates"] = ["192.168.16.123"]
         self.staticConf["hostInterfaceMap"] = {"ds01":"eth0",
                                                "ds02":"eth0",
                                                "ds03":"eth0",
@@ -41,3 +42,5 @@ class staticConfig():
             return iscsiTargetTypes.get("storageProvider")
         else:
             return None
+    def getAllNodesList(self):
+        return self.staticConf["allNodes"]

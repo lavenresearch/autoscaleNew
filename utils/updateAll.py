@@ -41,7 +41,10 @@ class updateAll():
 
 
 def run():
-    iplist = ["192.168.0.99","192.168.0.98","192.168.16.122"]
+    sConf = staticConfing()
+    iplist = sConf.getAllNodesList()
+    print iplist
+    # iplist = ["192.168.0.99","192.168.0.98","192.168.16.122"]
     for ip in iplist:
         ua = updateAll(ip)
         ua.run()
