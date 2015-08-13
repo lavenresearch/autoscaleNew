@@ -44,7 +44,7 @@ class testAll():
     cgARG2 = ["low","tag3","tag4"]
 
     ascARG1 = ["user1","192.168.16.122"]
-    ascARG2 = ["user2","192.168.16.122"]
+    ascARG2 = ["user2","192.168.16.123"]
     #ascARG2 = ["192.168.3.62"]
 
     adtgARG1 = ["192.168.0.98","/dev/raid21434548043/lvv1","high"]
@@ -62,7 +62,7 @@ class testAll():
     bookStorageARG2 = ['user2',"60000","1434837582","1434855582",'tag2','tag2']
 
     rqbsARG1 = ['user1',"192.168.16.122","49000","tag1","tag2"]
-    rqbsARG2 = ['user2',"192.168.16.124","59000","tag1","tag2"]
+    rqbsARG2 = ['user2',"192.168.16.122","59000","tag1","tag2"]
 
     # rlesARG1
     def __init__(self):
@@ -103,15 +103,15 @@ class testAll():
             print "\n\n########################"
             print "requestExtraStorage 4"
             print "########################\n\n"
-            startT = time.clock()
+            startT = time.time()
             requestExtraStorage.run(self.rqesARG1)
-            firstT = time.clock()
+            firstT = time.time()-startT
             requestExtraStorage.run(self.rqesARG2)
-            secondT = time.clock()
+            secondT = time.time()-firstT-startT
             requestExtraStorage.run(self.rqesARG3)
-            thirdT = time.clock()
+            thirdT = time.time()-secondT-firstT-startT
             requestExtraStorage.run(self.rqesARG4)
-            fourthT = time.clock()
+            fourthT = time.time()-thirdT-secondT-firstT-startT
             print startT
             print firstT
             print secondT

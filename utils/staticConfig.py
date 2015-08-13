@@ -15,7 +15,7 @@ class staticConfig():
                                                "ds04":"eth0",
                                                "0-98":"bond0",
                                                "0-99":"bond0"}
-        self.staticConf["iscsiTargetType"] = {"groupManager":"scst",
+        self.staticConf["iscsiTargetType"] = {"groupManager":"tgt",
                                               "storageProvider":"scst"} # another option is "tgt"
         self.logger = autoscaleLog(__file__)
         self.logger.writeLog(self.staticConf)

@@ -34,8 +34,8 @@ def run(arg):
         sys.exit(1)
     providersConf = cHelper.getProviderConf()
     providerID = deviceName+deviceLocation
-    for groupProviderConf in providersConf.values():
-        if providerID in groupProviderConf.values():
+    for groupProvidersConf in providersConf.values():
+        if providerID in groupProvidersConf.keys():
             print "Storage Device have been already added into system!"
             print "failed1failed2failed"
             sys.exit(1)

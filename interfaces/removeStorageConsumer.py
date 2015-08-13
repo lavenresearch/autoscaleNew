@@ -23,8 +23,11 @@ def run(arg):
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
     consumersConf = cHelper.getConsumerConf()
     consumerConf = consumersConf.get(consumerLocation)
-    for localDeviceConf in consumerConf.get("extraDevicesList").values():
+    for localDeviceConf in consumerConf.get("extraDevicesList"):
         localDeviceMap = localDeviceConf.get("localDeviceMap")
+        if localDeviceMap == None:
+            continue
+        localDeviceMap = localDeviceMap.pop(0)
         if localDeviceMap == None:
             continue
         releaseStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py releaseStorage "+localDeviceMap+"\""
@@ -32,7 +35,7 @@ def run(arg):
         if out.find("706errorKEY") >= 0:
             print "failed1failed2failed"
             sys.exit(1)
-    del consumersConf[consumerLocation)
+    del consumersConf[consumerLocation]
     cHelper.setConsumerConf(consumersConf)
     userConsumers = cHelper.getUserConsumers()
     for user, uConsumers in userConsumers.items():
