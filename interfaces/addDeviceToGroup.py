@@ -27,14 +27,21 @@ def run(arg):
     path = sConf.getPath()
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper(infoCLocation["ipInfoC"],infoCLocation["portInfoC"])
-    startProviderCmd = "ssh -t root@"+deviceLocation+" \"python "+path+"main.py startProvider "+deviceName+" "+groupName+"\""
-    out = executeCmd(startProviderCmd)
-    if out.find("706errorKEY") >= 0:
-        print "failed1failed2failed"
-        sys.exit(1)
     gmConf = cHelper.getGroupMConf().get(groupName)
     if gmConf == None:
         print "Group do not exist"
+        print "failed1failed2failed"
+        sys.exit(1)
+    providersConf = cHelper.getProviderConf()
+    providerID = deviceName+deviceLocation
+    for groupProviderConf in providersConf.values():
+        if providerID in groupProviderConf.values():
+            print "Storage Device have been already added into system!"
+            print "failed1failed2failed"
+            sys.exit(1)
+    startProviderCmd = "ssh -t root@"+deviceLocation+" \"python "+path+"main.py startProvider "+deviceName+" "+groupName+"\""
+    out = executeCmd(startProviderCmd)
+    if out.find("706errorKEY") >= 0:
         print "failed1failed2failed"
         sys.exit(1)
     gmIP = gmConf.get("gmIP")

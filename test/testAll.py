@@ -44,7 +44,7 @@ class testAll():
     cgARG2 = ["low","tag3","tag4"]
 
     ascARG1 = ["user1","192.168.16.122"]
-    ascARG2 = ["user2","192.168.16.124"]
+    ascARG2 = ["user2","192.168.16.122"]
     #ascARG2 = ["192.168.3.62"]
 
     adtgARG1 = ["192.168.0.98","/dev/raid21434548043/lvv1","high"]

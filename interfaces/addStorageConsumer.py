@@ -24,22 +24,32 @@ def run(arg):
     path = sConf.getPath()
     infoCLocation = sConf.getInfoCLocation()
     cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
+    consumersConf = cHelper.getConsumerConf()
+    if consumerLocation in consumersConf.keys():
+        print "consumer already exist!"
+        print "failed1failed2failed"
+        sys.exit(1)
     cmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py startConsumer "+userName+"\""
     userConsumers = cHelper.getUserConsumers()
+    # for uConsumers in userConsumers.values():
+        # if consumerLocation in uConsumers:
+            # print "consumer already exist!"
+            # print "failed1failed2failed"
+            # sys.exit(1)
     userC = userConsumers.get(userName)
     if userC == None:
         userC = []
-    if consumerLocation in userC:
-        print "consumer already exist!"
-        print "failed1failed2failed"
-        return False
+    # if consumerLocation in userC:
+        # print "consumer already exist!"
+        # print "failed1failed2failed"
+        # return False
     userC.append(consumerLocation)
     userConsumers[userName] = userC
     cHelper.setUserConsumers(userConsumers)
     out = executeCmd(cmd)
     if out.find("706errorKEY") >= 0:
         print "failed1failed2failed"
-        return False
+        sys.exit(1)
 
 if __name__ == '__main__':
     consumerLocation = sys.argv[1]
