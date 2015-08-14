@@ -57,7 +57,7 @@ def run(arg):
     groupName = groupList[0]
     res = gchooser.applyTimeslot(groupName,startTime,endTime,stepSize)
     if res == False:
-        print "booking failed"
+        print "Do not have enough space, booking failed"
         print "failed1failed2failed"
         return False
 

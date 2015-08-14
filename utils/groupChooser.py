@@ -48,7 +48,12 @@ class groupChooser:
                 asize = availableSpace
             if size > asize:
                 self.logger.writeLog("Booking resources failed, no enough space!")
+                print "Booking resources failed, no enough space!"
                 return False
+        for t in xrange(stKey,etKey):
+            asize = timeslotBookingForGroup.get(str(t))
+            if asize == None:
+                asize = availableSpace
             timeslotBookingForGroup[str(t)] = asize - size
         timeslotBooking[groupName] = timeslotBookingForGroup
         print "prepare to SET"

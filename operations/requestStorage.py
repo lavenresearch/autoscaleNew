@@ -22,12 +22,8 @@ class requestStorage():
         sConf = staticConfig()
         infoCLocation = sConf.getInfoCLocation()
         cHelper = configHelper( infoCLocation.get("ipInfoC"), infoCLocation.get("portInfoC"))
-        currentUsageInfo = getUsageInfo.run([])
-        asize = currentUsageInfo.get(self.groupName).get('groupSize')
-        asize = int(asize)
-        ssize = int(self.stepSize)
-        if ssize > asize:
-            print "do not have enough storage space stepSize:%d and asize:%d" % (ssize,asize)
-            return False
         newDevices = self.sConsumer.requestStorage(self.groupName,self.stepSize,self.mode)
+        if newDevices == []:
+            print "706errorKEY"
+            return
         print str(newDevices)
