@@ -4,6 +4,7 @@ from utils.autoScaleLog import autoscaleLog
 from utils.groupChooser import groupChooser
 from utils.codecSwitcher import codecSwitcher
 from utils.executeCmd import executeCmdSp
+from interfaces import getUsageInfo
 import sys,os
 
 # Needed arguments including:
@@ -50,8 +51,21 @@ def run(arg):
     if groupList == []:
         print "No storage resource available"
         print "failed1failed2failed"
-        return False
-    groupName = groupList[0]
+        sys.exit(1)
+    groupName = None
+    for groupN in groupList:
+        currentUsageInfo = getUsageInfo.run([])
+        gsize = currentUsageInfo.get(groupN).get('groupSize')
+        usize = currentUsageInfo.get(groupN).get('usedSize')
+        asize = long(gsize) - long(usize) - 100
+        ssize = long(stepSize)
+        if ssize <= asize:
+            groupName = groupN
+            break
+    if groupName == None:
+        print "Do not have enough storage space requestSize:%d and asize:%d" % (ssize,asize)
+        print "failed1failed2failed"
+        sys.exit(1)
     requestStorageCmd = "ssh -t root@"+consumerLocation+" \"python "+path+"main.py requestStorage "+groupName+" "+str(stepSize)+" extra\""
     out = executeCmd(requestStorageCmd)
     if out.find("706errorKEY") >= 0:
