@@ -4,7 +4,7 @@ from utils.autoScaleLog import autoscaleLog
 from utils.groupChooser import groupChooser
 from utils.codecSwitcher import codecSwitcher
 from utils.executeCmd import executeCmdSp
-import sys,os
+import sys,os,time
 
 # Needed arguments including:
 #
@@ -33,6 +33,8 @@ def executeCmd(cmd):
     return output
 
 def run(arg):
+    os.environ['TZ']="Asia/Shanghai"
+    time.tzset()
     cswitcher = codecSwitcher()
     logger = autoscaleLog(__file__)
     logger.writeLog(arg)

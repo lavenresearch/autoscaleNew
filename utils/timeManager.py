@@ -10,6 +10,8 @@ class timeManager():
     logger = None
     time = 0
     def __init__(self):
+        os.environ['TZ']="Asia/Shanghai"
+        time.tzset()
         self.logger = autoscaleLog(__file__)
         self.sConf = staticConfig()
         infoCLocation = self.sConf.getInfoCLocation()
@@ -28,6 +30,8 @@ class timeManager():
     	return self.time
 
 def run(arg):
+    os.environ['TZ']="Asia/Shanghai"
+    time.tzset()
     tm = timeManager()
     print arg
     if len(arg) == 0:
