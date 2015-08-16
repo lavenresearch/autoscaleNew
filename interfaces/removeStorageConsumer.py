@@ -40,8 +40,9 @@ def run(arg):
     userConsumers = cHelper.getUserConsumers()
     for user, uConsumers in userConsumers.items():
         if consumerLocation in uConsumers:
-            uConsumers.remove(consumerLocation)
-            userConsumers[user] = uConsumers
+            ucs = uConsumers
+            ucs.remove(consumerLocation)
+            userConsumers[user] = ucs
     cHelper.setUserConsumers(userConsumers)
 
 if __name__ == '__main__':
