@@ -101,15 +101,16 @@ class storageConsumer():
         remoteConsumerConf = remoteConsumersConf[self.conf["consumerID"]]
         remoteGroupManagersConf = self.cHelper.getGroupMConf()
         remoteGroupManagerConf = remoteGroupManagersConf[groupName]
+        remoteGroupManagerConf["currentTid"] += 1
         remoteConsumerConf["remoteDiskAmount"] += 1
-        extraDeviceConf["remoteLV"] = remoteConsumerConf["remoteLV"]+str(remoteConsumerConf["remoteDiskAmount"])
+        extraDeviceConf["remoteLV"] = remoteConsumerConf["remoteLV"]+str(remoteGroupManagerConf["currentTid"])
+        # extraDeviceConf["remoteLV"] = remoteConsumerConf["remoteLV"]+str(remoteConsumerConf["remoteDiskAmount"])
         cswitcher = codecSwitcher()
         extraDeviceConf["remoteVG"] = cswitcher.getHash(groupName)+"VG"
         extraDeviceConf["remoteLVPath"] = "/dev/"+extraDeviceConf["remoteVG"]+"/"+extraDeviceConf["remoteLV"]
-        extraDeviceConf["remoteIQN"] = remoteConsumerConf["remoteIQN"]+str(remoteConsumerConf["remoteDiskAmount"])
+        extraDeviceConf["remoteIQN"] = remoteConsumerConf["remoteIQN"]+str(remoteGroupManagerConf["currentTid"])
         extraDeviceConf["groupName"] = groupName
         extraDeviceConf["remoteSize"] = stepSize
-        remoteGroupManagerConf["currentTid"] += 1
         extraDeviceConf["remoteTid"] = remoteGroupManagerConf["currentTid"]
         groupManagerIP = remoteGroupManagerConf["gmIP"]
 

@@ -5,7 +5,7 @@ class staticConfig():
     staticConf = {}
     logger = None
     def __init__(self):
-        self.staticConf["allNodes"] = ["192.168.0.98","192.168.0.99","192.168.16.122","192.168.16.123"]
+        self.staticConf["allNodes"] = ["192.168.0.98","192.168.0.97","192.168.16.122","192.168.16.123"]
         self.staticConf["infoCLocation"] = {"ipInfoC":"192.168.16.123", "portInfoC":6379}
         self.staticConf["path"] = "/opt/suyi/autoscale706kylin/"
         self.staticConf["gmCandidates"] = ["192.168.16.123"]
