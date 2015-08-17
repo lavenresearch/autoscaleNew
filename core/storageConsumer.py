@@ -109,6 +109,7 @@ class storageConsumer():
         extraDeviceConf["remoteVG"] = cswitcher.getHash(groupName)+"VG"
         extraDeviceConf["remoteLVPath"] = "/dev/"+extraDeviceConf["remoteVG"]+"/"+extraDeviceConf["remoteLV"]
         extraDeviceConf["remoteIQN"] = remoteConsumerConf["remoteIQN"]+str(remoteGroupManagerConf["currentTid"])
+        # extraDeviceConf["remoteIQN"] = remoteConsumerConf["remoteIQN"]+str(remoteConsumerConf["remoteDiskAmount"])
         extraDeviceConf["groupName"] = groupName
         extraDeviceConf["remoteSize"] = stepSize
         extraDeviceConf["remoteTid"] = remoteGroupManagerConf["currentTid"]
