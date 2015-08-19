@@ -29,6 +29,7 @@ def run(arg):
     logger.writeLog(allConf)
     print json.dumps(allConf)
     logger.shutdownLog()
+    return allConf
 
 if __name__ == '__main__':
     run([])
