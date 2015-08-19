@@ -5,16 +5,32 @@ class staticConfig():
     staticConf = {}
     logger = None
     def __init__(self):
-        self.staticConf["allNodes"] = ["192.168.0.98","192.168.0.97","192.168.16.122","192.168.16.123"]
+        self.staticConf["allNodes"] = ["192.168.0.98","192.168.0.97","192.168.0.99",
+                                       "192.168.16.121","192.168.16.122","192.168.16.123","192.168.16.124",
+                                       "192.168.16.101","192.168.16.102","192.168.16.103","192.168.16.104",
+                                       "192.168.16.105","192.168.16.106","192.168.1.88",
+                                       "192.168.16.111","192.168.16.112","192.168.16.113","192.168.16.114"]
         self.staticConf["infoCLocation"] = {"ipInfoC":"192.168.16.123", "portInfoC":6379}
         self.staticConf["path"] = "/opt/suyi/autoscale706kylin/"
-        self.staticConf["gmCandidates"] = ["192.168.16.123"]
+        self.staticConf["gmCandidates"] = ["192.168.16.111"]
         self.staticConf["hostInterfaceMap"] = {"ds01":"eth0",
                                                "ds02":"eth0",
                                                "ds03":"eth0",
                                                "ds04":"eth0",
+                                               "0-97":"bond0",
                                                "0-98":"bond0",
-                                               "0-99":"bond0"}
+                                               "0-99":"bond0",
+                                               "client01":"eth3",
+                                               "client02":"eth3",
+                                               "client03":"eth9",
+                                               "client04":"eth5",
+                                               "client05":"eth2",
+                                               "client06":"eth3",
+                                               "mds01":"eth0",
+                                               "mds02":"eth0",
+                                               "mds03":"eth0",
+                                               "mds04":"eth0",
+                                               "jm":"eth0"}
         self.staticConf["iscsiTargetType"] = {"groupManager":"tgt",
                                               "storageProvider":"scst"} # another option is "tgt"
         self.logger = autoscaleLog(__file__)

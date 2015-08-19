@@ -6,6 +6,7 @@ import os,sys
 import socket
 import fcntl
 import struct
+import json
 
 class storageProvider():
     ipInfoC = ""
@@ -17,6 +18,7 @@ class storageProvider():
     iscsiTargetType = ""
     logger = None
     path = "/usr/local/src/suyiAutoscale/src/"
+    storageProviderConf = {}
     def __init__(self,deviceName,groupName):
         sConf = staticConfig()
         self.ipInfoC = sConf.getInfoCLocation()["ipInfoC"]
@@ -34,6 +36,9 @@ class storageProvider():
         self.logger = autoscaleLog(__file__)
         sConf = staticConfig()
         self.path = sConf.getPath()+"core/"
+        confPath = sConf.getPath()+"conf/storageProviderConf.json"
+        with open(confPath,"r") as fspc:
+            self.storageProviderConf = json.loads(fspc.read())
 
     def getLocalIP(self, ifname):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -84,7 +89,13 @@ class storageProvider():
         deviceNameShort = self.conf["deviceName"].split("/")[-1]
         self.conf["deviceLocation"] = self.hostIP
         self.conf["deviceIQN"] = "iqn.dsal.storage:"+hostName+"."+deviceNameShort
-        self.conf["deviceType"] = "localDisk"
+        deviceType = self.storageProviderConf.get(self.conf["deviceName"])
+        if deviceType == None:
+            self.conf["deviceType"] = "localDisk"
+        elif deviceType.get("deviceType") == None:
+            self.conf["deviceType"] = "localDisk"
+        else:
+            self.conf["deviceType"] = deviceType.get("deviceType")
         self.conf["deviceSize"] = self.getDeviceSize(self.conf["deviceName"])
         atid = self.cHelper.getAvailTid()
         tid = atid.get(self.hostIP)

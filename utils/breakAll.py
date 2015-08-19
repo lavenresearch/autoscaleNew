@@ -7,7 +7,9 @@ def executeCmd(cmd):
     print output
     return output
 
-
+# def remoteCmd(rcmd,remoteip):
+    # cmd = "ssh -t root@"+remoteip+" \""+rcmd+"\""
+    # return executeCmd(cmd)
 
 def run():
     sConf = staticConfig()
@@ -15,6 +17,9 @@ def run():
     print iplist
     # iplist = ["192.168.0.98","192.168.0.99","192.168.16.122"]
     cmd = "ssh-copy-id -i root@"
-    executeCmd("ssh-keygen -t rsa")
+    # for ip1 in iplist:
+        # remoteCmd("ssh-keygen -t rsa",ip1)
+        # for ip in iplist:
+            # remoteCmd(cmd+ip,ip1)
     for ip in iplist:
         executeCmd(cmd+ip)

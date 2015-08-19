@@ -1,0 +1,14 @@
+{
+ "/dev/raid21434548043/lvv1": {
+  "deviceType": "LogicalVolume"
+ }, 
+ "/dev/raid21434548043/cryptsource_lvv3": {
+  "deviceType": "LogicalVolume"
+ }, 
+ "/dev/raid21434548043/lvv2": {
+  "deviceType": "LogicalVolume"
+ }, 
+ "/dev/raid21434548043/cryptsource_lvv4": {
+  "deviceType": "LogicalVolume"
+ }
+}
