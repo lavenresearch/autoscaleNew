@@ -51,3 +51,12 @@ def run():
     remotePInfo = json.dumps(remotePInfo)
     redisClient.set("providerInformation",remotePInfo)
     print remotePInfo
+    confPath = sconf.getPath()
+    confFile = confPath+"conf/storageProviderConf.json"
+    confContent = {}
+    with open(confFile,"w") as cf:
+        for dev in devL2:
+            confContent[dev] = {"deviceType":"LogicalVolume"}
+        cf.write(json.dumps(confContent,indent=1))
+    
+    

@@ -10,7 +10,7 @@ import sys,os
 class deployALL():
     destinationIP = ""
     path = ""
-    initialCmds = ["service iptable stop","setenforce 0","lvmconf --disable-cluster","yum install scsi-target-utils.x86_64 iscsi-initiator-utils.x86_64 reiserfs-utils --nogpgcheck -y"]
+    initialCmds = ["service iptables stop","setenforce 0","lvmconf --disable-cluster","yum install scsi-target-utils.x86_64 iscsi-initiator-utils.x86_64 reiserfs-utils --nogpgcheck -y"]
     # initialCmds = ["service iptable stop","setenforce 0"]
     currentPwd = "./"
     def __init__(self, arg):

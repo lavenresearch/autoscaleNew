@@ -10,9 +10,9 @@ class staticConfig():
                                        "192.168.16.101","192.168.16.102","192.168.16.103","192.168.16.104",
                                        "192.168.16.105","192.168.16.106","192.168.1.88",
                                        "192.168.16.111","192.168.16.112","192.168.16.113","192.168.16.114"]
-        self.staticConf["infoCLocation"] = {"ipInfoC":"192.168.16.123", "portInfoC":6379}
+        self.staticConf["infoCLocation"] = {"ipInfoC":"192.168.1.88", "portInfoC":6379}
         self.staticConf["path"] = "/opt/suyi/autoscale706kylin/"
-        self.staticConf["gmCandidates"] = ["192.168.16.111"]
+        self.staticConf["gmCandidates"] = ["192.168.16.105"]
         self.staticConf["hostInterfaceMap"] = {"ds01":"eth0",
                                                "ds02":"eth0",
                                                "ds03":"eth0",
